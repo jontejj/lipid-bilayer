@@ -1,0 +1,53 @@
+/* Copyright 2025 jonatanjonsson
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+package com.github.jontejj.cell.evolution;
+
+import java.util.List;
+
+public class Protein
+{
+	private final List<AminoAcid> aminoacids;
+	private final double molecularMass;
+
+	public Protein(List<AminoAcid> aminoacids)
+	{
+		this.aminoacids = aminoacids;
+		this.molecularMass = aminoacids.stream().mapToDouble(AminoAcid::molecularMass).sum();
+	}
+
+	public double polarity()
+	{
+		// TODO: implement so that each protein functions differently
+		return 0.0;
+	}
+
+	// TODO: add physical size etc about the aminoacids?
+
+	@Override
+	public String toString()
+	{
+		return aminoAcids().toString();
+	}
+
+	private double molecularMass()
+	{
+		return molecularMass;
+	}
+
+	public List<AminoAcid> aminoAcids()
+	{
+		return aminoacids;
+	}
+}

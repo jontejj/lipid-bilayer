@@ -2,17 +2,71 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>lipid-bilayer</groupId>
-	<artifactId>lipid-bilayer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>com.github.jontejj</groupId>
+	<artifactId>cell</artifactId>
+	<version>1.0</version>
+	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<!-- Change the nd4j.backend property to nd4j-cuda-X-platform to use CUDA 
+			GPUs -->
+		<!-- <nd4j.backend>nd4j-cuda-10.2-platform</nd4j.backend> -->
+		<nd4j.backend>nd4j-native</nd4j.backend>
+		<jaxb.version>2.3.0</jaxb.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+				<goals>
+					<goal>compile</goal>
+				</goals>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+                    <compilerArgs>
+                        <arg>--module-path</arg>
+                        <arg>${maven.module.path}</arg>
+                    </compilerArgs>
+					<forceJavacCompilerUse>true</forceJavacCompilerUse>
+					<outputDirectory>${project.build.directory}/generated-sources/annotations</outputDirectory>
+					<annotationProcessorPaths>
+						<annotationProcessorPath>
+							<groupId>org.openjdk.jmh</groupId>
+							<artifactId>jmh-generator-annprocess</artifactId>
+							<version>1.32</version>
+						</annotationProcessorPath>
+						<annotationProcessorPath>
+							<groupId>javax.xml.bind</groupId>
+							<artifactId>jaxb-api</artifactId>
+							<version>${jaxb.version}</version>
+						</annotationProcessorPath>
+					</annotationProcessorPaths>
+					<annotationProcessors>
+						<annotationProcessor>org.openjdk.jmh.generators.BenchmarkProcessor</annotationProcessor>
+					</annotationProcessors>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.openjdk.jmh</groupId>
+						<artifactId>jmh-generator-annprocess</artifactId>
+						<version>1.32</version>
+					</dependency>
+					<dependency>
+						<groupId>javax.xml.bind</groupId>
+						<artifactId>jaxb-api</artifactId>
+						<version>${jaxb.version}</version>
+						<type>jar</type>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.openjfx</groupId>
+				<artifactId>javafx-maven-plugin</artifactId>
+				<version>0.0.5</version>
+				<configuration>
+					<mainClass>com.github.jontejj.cell.ui.JavaFxUI</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -36,57 +90,101 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>25.1-jre</version>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<!--<version>24.0.1</version>-->
+			<version>17.0.15</version>
 		</dependency>
-
-		<!-- Test api -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <!--<version>24.0.1</version>-->
+            <version>17.0.15</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.almasb</groupId>
+            <artifactId>fxgl</artifactId>
+            <version>21.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.8-jre</version>
+        </dependency>
+		<dependency>
+			<groupId>org.nd4j</groupId>
+			<artifactId>${nd4j.backend}</artifactId>
+			<version>1.0.0-M2</version>
+		</dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+		<dependency>
+			<groupId>org.openjdk.jmh</groupId>
+			<artifactId>jmh-core</artifactId>
+			<version>1.32</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>${jaxb.version}</version>
+			<type>jar</type>
+		</dependency>
+        <!-- Test api -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>5.1.0</version>
-			<scope>test</scope>
+            <!-- <scope>test</scope> -->
 		</dependency>
-		<!-- ParameterizedTest -->
+        <!-- ParameterizedTest -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
 			<version>5.1.0</version>
-			<scope>test</scope>
+            <!-- <scope>test</scope> -->
 		</dependency>
 
         <!-- Fluent assertions -->
 		<dependency>
-			<groupId>org.easytesting</groupId>
-			<artifactId>fest-assert</artifactId>
-			<version>1.4</version>
-			<scope>test</scope>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+            <!-- use 2.9.1 for Java 7 projects -->
+			<version>3.19.0</version>
+            <!-- <scope>test</scope> -->
 		</dependency>
-		<!-- Test runners... -->
+        <!-- Test runners... -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.1.0</version>
-			<scope>test</scope>
+            <!-- <scope>test</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.junit.vintage</groupId>
 			<artifactId>junit-vintage-engine</artifactId>
 			<version>5.1.0</version>
-			<scope>test</scope>
+            <!-- <scope>test</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
 			<version>1.1.0</version>
-			<scope>test</scope>
+            <!-- <scope>test</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-runner</artifactId>
 			<version>1.1.0</version>
-			<scope>test</scope>
+            <!-- <scope>test</scope> -->
 		</dependency>
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+
 	</dependencies>
 </project>
