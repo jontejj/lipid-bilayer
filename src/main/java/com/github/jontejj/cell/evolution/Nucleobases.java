@@ -47,7 +47,7 @@ public enum Nucleobases
 	private ImmutableList<Nucleobases> othersDna;
 
 	/**
-	 * @param abv
+	 * @param abv abbreviation
 	 * @param molecularMass expressed in g/mol (also called molar mass)
 	 */
 	private Nucleobases(char abv, double molecularMass)
@@ -96,14 +96,19 @@ public enum Nucleobases
 		return str.chars().mapToObj(c -> {
 			switch((char) c)
 			{
+			case 'a':
 			case 'A':
 				return Nucleobases.ADENINE;
+			case 'c':
 			case 'C':
 				return Nucleobases.CYTOSINE;
+			case 'g':
 			case 'G':
 				return Nucleobases.GUANINE;
+			case 't':
 			case 'T':
 				return Nucleobases.THYMINE;
+			case 'u':
 			case 'U':
 				return Nucleobases.URACIL;
 			}

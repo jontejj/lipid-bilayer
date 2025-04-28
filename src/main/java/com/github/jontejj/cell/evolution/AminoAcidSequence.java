@@ -16,13 +16,7 @@ package com.github.jontejj.cell.evolution;
 
 import java.util.List;
 
-public class Cell
+public record AminoAcidSequence(List<AminoAcid> aminoacids, double molecularMass, long signature)
 {
-	// TODO: division for some cell types and not for others
-	// TODO: communication with other cells
-	// TODO: create proteins based on transcription factors
 
-	private Genome genome;
-
-	private List<Protein> proteinsInCell;
 }

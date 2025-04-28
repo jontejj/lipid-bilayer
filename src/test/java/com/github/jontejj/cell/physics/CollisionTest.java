@@ -16,12 +16,6 @@ package com.github.jontejj.cell.physics;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.jontejj.cell.physics.ObjectUpdatedListener;
-import com.github.jontejj.cell.physics.PhysicalObject;
-import com.github.jontejj.cell.physics.Rectangle;
-import com.github.jontejj.cell.physics.Vec2;
-import com.github.jontejj.cell.physics.World;
-
 public class CollisionTest
 {
 	@Test

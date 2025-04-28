@@ -1,4 +1,4 @@
-/* Copyright 2019 jonatanjonsson
+/* Copyright 2025 jonatanjonsson
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,17 +12,21 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.evolution.blobs;
+package com.github.jontejj.cell.evolution.proteins;
 
-public final class Blob
+import com.github.jontejj.cell.evolution.AminoAcidSequence;
+import com.github.jontejj.cell.evolution.Cytoplasm;
+
+public class EnzymeProtein extends FunctionalProtein
 {
-	private final int strength;
-
-	private final int speed;
-
-	public Blob(int strength, int speed)
+	public EnzymeProtein(AminoAcidSequence aminoAcidSequence)
 	{
-		this.strength = strength;
-		this.speed = speed;
+		super(aminoAcidSequence);
+	}
+
+	@Override
+	public void performFunction(Cytoplasm env)
+	{
+		env.convertResourceToEnergy(4.0 * molecularMass() / 1000.0); // More mass = more catalysis
 	}
 }

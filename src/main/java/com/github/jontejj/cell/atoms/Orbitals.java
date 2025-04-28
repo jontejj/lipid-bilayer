@@ -25,11 +25,11 @@ public class Orbitals
 	{
 		int protons = element.protons();
 
-		int electronsInShells = 0;
+		// int electronsInShells = 0;
 		if(protons <= 2)
 			return protons;
 
-		electronsInShells += 2;
+		// electronsInShells += 2;
 		return 0;
 	}
 }

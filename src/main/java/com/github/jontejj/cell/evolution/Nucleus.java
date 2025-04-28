@@ -16,38 +16,41 @@ package com.github.jontejj.cell.evolution;
 
 import java.util.List;
 
-public class Protein
+import com.github.jontejj.cell.evolution.proteins.Protein;
+
+public class Nucleus
 {
-	private final List<AminoAcid> aminoacids;
-	private final double molecularMass;
+	// TODO: division for some cell types and not for others
+	// TODO: communication with other cells
+	// TODO: create proteins based on transcription factors
 
-	public Protein(List<AminoAcid> aminoacids)
+	private final Genome genome;
+
+	public Nucleus(Genome genome)
 	{
-		this.aminoacids = aminoacids;
-		this.molecularMass = aminoacids.stream().mapToDouble(AminoAcid::molecularMass).sum();
+		this.genome = genome;
 	}
 
-	public double polarity()
+	public Nucleus binaryFission()
 	{
-		// TODO: implement so that each protein functions differently
-		return 0.0;
+		// TODO: also mimic recombination
+		return new Nucleus(genome.replicate());
 	}
 
-	// TODO: add physical size etc about the aminoacids?
+	public Genome genome()
+	{
+		return genome;
+	}
+
+	public List<Protein> timestep()
+	{
+		List<Protein> newProteins = genome.timestep();
+		return newProteins;
+	}
 
 	@Override
 	public String toString()
 	{
-		return aminoAcids().toString();
-	}
-
-	private double molecularMass()
-	{
-		return molecularMass;
-	}
-
-	public List<AminoAcid> aminoAcids()
-	{
-		return aminoacids;
+		return genome.toString();
 	}
 }

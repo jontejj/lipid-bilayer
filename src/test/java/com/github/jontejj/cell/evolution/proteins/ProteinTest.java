@@ -12,7 +12,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.evolution;
+package com.github.jontejj.cell.evolution.proteins;
 
 import static com.github.jontejj.cell.evolution.AminoAcid.Aspartate;
 import static com.github.jontejj.cell.evolution.AminoAcid.Histidine;
@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.jontejj.cell.evolution.DNA;
+import com.github.jontejj.cell.evolution.Nucleobases;
 import com.google.common.collect.ImmutableList;
 
 public class ProteinTest
@@ -32,10 +34,10 @@ public class ProteinTest
 	@Test
 	public void testThatTranslationTranslatesCorrectAminoAcids() throws Exception
 	{
-		Protein protein = new DNA(Nucleobases.fromString("AUGCCAGAUCACUAA")).transcribe().translate();
+		Protein protein = new DNA(Nucleobases.fromString("AUGCCAGAUCACUAA"), 0).transcribe().get().translate();
 		assertThat(protein.aminoAcids()).hasSameElementsAs(ImmutableList.of(Methionine, Proline, Aspartate, Histidine));
 
-		protein = new DNA(Nucleobases.fromString("AUGAUCUCCUAA")).transcribe().translate();
+		protein = new DNA(Nucleobases.fromString("AUGAUCUCCUAA"), 0).transcribe().get().translate();
 		assertThat(protein.aminoAcids()).hasSameElementsAs(of(Methionine, Isoleucine, Serine));
 	}
 }

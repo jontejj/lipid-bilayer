@@ -15,7 +15,7 @@
 package com.github.jontejj.cell.evolution;
 
 //Contains cells and whatever the cells output (exocytosis)
-public class ExtracellularMatrix
+public class ExtraCellularMatrix
 {
 
 }

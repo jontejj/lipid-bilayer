@@ -30,7 +30,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
-public class BasicGameApp extends GameApplication
+public class FXGLGameApp extends GameApplication
 {
 
 	@Override
@@ -71,7 +71,7 @@ public class BasicGameApp extends GameApplication
 	protected void initInput()
 	{
 		onKey(KeyCode.D, () -> {
-			player.translateX(5); // move sdright 5 pixels
+			player.translateX(5); // move right 5 pixels
 			FXGL.inc("pixelsMoved", +5);
 		});
 
@@ -98,7 +98,7 @@ public class BasicGameApp extends GameApplication
 
 			// order of types is the same as passed into the constructor
 			@Override
-			protected void onCollisionBegin(Entity player, Entity coin)
+			protected void onCollisionBegin(Entity playerEntity, Entity coin)
 			{
 				coin.removeFromWorld();
 			}

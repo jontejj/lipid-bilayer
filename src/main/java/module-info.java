@@ -4,10 +4,10 @@ module com.github.jontejj.cell
 	requires javafx.base;
 	requires java.sql; // Because of nd4j.api??
 	// requires javafx.beans;
-	requires javafx.graphics;
+	requires transitive javafx.graphics;
 	requires javafx.controls;
 	// requires javafx.fxml;
-	requires java.desktop;
+	requires transitive java.desktop;
 	requires com.google.common;
 	// requires nd4j.api;
 	requires org.apache.commons.io;
@@ -19,6 +19,8 @@ module com.github.jontejj.cell
 	requires com.almasb.fxgl.all;
 	requires com.almasb.fxgl.entity;
 	requires com.almasb.fxgl.core;
+	requires com.google.errorprone.annotations;
+	requires org.dyn4j;
 
 	exports com.github.jontejj.cell.ui to javafx.graphics;
 	exports com.github.jontejj.cell.evolution.game to com.almasb.fxgl.core;

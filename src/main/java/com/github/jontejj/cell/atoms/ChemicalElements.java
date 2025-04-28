@@ -164,6 +164,16 @@ public enum ChemicalElements
 		return protons;
 	}
 
+	public Amu mass()
+	{
+		return mass;
+	}
+
+	public boolean isStable()
+	{
+		return stable == Stable.YES;
+	}
+
 	public String shortName()
 	{
 		return name();

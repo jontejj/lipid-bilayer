@@ -19,17 +19,77 @@ import java.util.Random;
 
 import org.assertj.core.util.Lists;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 public class DNA
 {
+	public enum ChromatinMode
+	{
+		/**
+		 * Only DNA in euchromatin mode can be transcribed
+		 */
+		EUCHROMATIN,
+		HETEROCHROMATIN
+	}
+
 	private static Random RND = new Random(42);
 
 	private List<Nucleobases> nucleotides;
+	private final double molecularMass;
 
-	public DNA(List<Nucleobases> nucleotides)
+	private ChromatinMode chromatinMode = ChromatinMode.HETEROCHROMATIN;
+
+	private final int position;
+
+	/**
+	 * @param nucleotides the nucleotides that this DNA represents
+	 * @param position where in the Genome the DNA is located
+	 */
+	public DNA(List<Nucleobases> nucleotides, int position)
 	{
 		this.nucleotides = nucleotides;
+		this.position = position;
+		this.molecularMass = nucleotides.stream().mapToDouble(Nucleobases::molecularMass).sum();
+		setEuchromatinModeForHouseKeepingGenes();
+	}
+
+	private void setEuchromatinModeForHouseKeepingGenes()
+	{
+		if(nucleotides.get(0) == Nucleobases.ADENINE)
+		{
+			// nucleotides.get(0) == Nucleobases.ADENINE simulates that some housekeeping genes are always in euchromatin mode
+			this.chromatinMode = ChromatinMode.EUCHROMATIN;
+		}
+	}
+
+	public void setEuchromatinModeRandomly()
+	{
+		if(RND.nextInt(10) == 1)
+		{
+			// Only about 10% of the genome is euchromatin (open for transcription).)
+			this.chromatinMode = ChromatinMode.EUCHROMATIN;
+		}
+		else
+		{
+			this.chromatinMode = ChromatinMode.HETEROCHROMATIN;
+		}
+		setEuchromatinModeForHouseKeepingGenes();
+	}
+
+	public ChromatinMode chromatinMode()
+	{
+		return chromatinMode;
+	}
+
+	public void forceEuchromatinMode()
+	{
+		this.chromatinMode = ChromatinMode.EUCHROMATIN;
+	}
+
+	public double molecularMass()
+	{
+		return molecularMass;
 	}
 
 	/**
@@ -40,16 +100,16 @@ public class DNA
 	 * G-C
 	 * C-G
 	 */
-
-	// TODO: differentiate between euchromatin and heterochromatin (which affects what DNA that is transcriptionally active)
-	public mRNA transcribe()
+	public Optional<mRNA> transcribe()
 	{
+		if(chromatinMode == ChromatinMode.HETEROCHROMATIN)
+			return Optional.absent();
 		List<Codon> codons = Lists.newArrayList();
 		for(int i = 0; i < nucleotides.size(); i += 3)
 		{
-			codons.add(new Codon(nucleotides.get(i).toRNA(), nucleotides.get(i + 1).toRNA(), nucleotides.get(i + 2).toRNA()));
+			codons.add(Codon.getOrInitialize(nucleotides.get(i).toRNA(), nucleotides.get(i + 1).toRNA(), nucleotides.get(i + 2).toRNA()));
 		}
-		return new mRNA(codons);
+		return Optional.of(new mRNA(codons, this));
 	}
 
 	public DNA replicate()
@@ -68,6 +128,7 @@ public class DNA
 			}
 			if(RND.nextInt(1000000) == 2)
 			{
+				// Addition
 				newNucleotides.add(base);
 				Nucleobases addition = Nucleobases.values()[(RND.nextInt(Nucleobases.values().length))];
 				newNucleotides.add(addition);
@@ -80,6 +141,19 @@ public class DNA
 			}
 			newNucleotides.add(base);
 		}
-		return this;
+		DNA dna = new DNA(newNucleotides, position);
+		dna.chromatinMode = this.chromatinMode;
+		return dna;
+	}
+
+	public int position()
+	{
+		return position;
+	}
+
+	@Override
+	public String toString()
+	{
+		return nucleotides.toString();
 	}
 }

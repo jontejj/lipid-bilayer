@@ -14,24 +14,35 @@
  */
 package com.github.jontejj.cell.evolution;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.assertj.core.util.Lists;
 
+import com.github.jontejj.cell.evolution.proteins.EnzymeProtein;
+import com.github.jontejj.cell.evolution.proteins.Protein;
+import com.github.jontejj.cell.evolution.proteins.RegulatoryProtein;
+import com.github.jontejj.cell.evolution.proteins.TransporterProtein;
+
 public class mRNA
 {
-	private List<Codon> codons;
+	private final List<Codon> codons;
+	private final DNA sourceDNA;
 
-	public mRNA(List<Codon> codons)
+	public mRNA(List<Codon> codons, DNA sourceDNA)
 	{
 		this.codons = codons;
+		this.sourceDNA = sourceDNA;
 	}
 
 	public Protein translate()
 	{
 		// TODO: splicing?
-		// TODO: what if multiple proteins exist in the codons? Right now this only returns the first protein
+		// TODO: repression
+		// TODO: operons
+		// TODO: what if multiple proteins exist in the codons (Polycistronic)? Right now this only returns the first protein
 		List<AminoAcid> aminoacids = Lists.newArrayList();
+		boolean startCodonEncountered = false;
 		for(Codon c : codons)
 		{
 			AminoAcid aa = AminoAcid.translate(c);
@@ -39,9 +50,42 @@ public class mRNA
 			{
 				break;
 			}
-			aminoacids.add(aa);
+			if(aa == AminoAcid.Methionine)
+			{
+				startCodonEncountered = true;
+			}
+			if(startCodonEncountered)
+			{
+				aminoacids.add(aa);
+			}
 		}
+		Stats.totalNumberOfAminoAcids = Stats.totalNumberOfAminoAcids.add(BigDecimal.valueOf(aminoacids.size()));
 		// TODO: how to fold the protein based on the amino acids?
-		return new Protein(aminoacids);
+		double molecularMass = aminoacids.stream().mapToDouble(AminoAcid::molecularMass).sum();
+		Stats.totalMassOfProteins = Stats.totalMassOfProteins.add(BigDecimal.valueOf(molecularMass));
+		// TODO: how to make the sequenceSignature not change that much after a small mutation?
+		long sequenceSignature = aminoacids.stream().mapToLong(a -> a.shortName().hashCode()).reduce(1L, (acc, h) -> 31L * acc + h);
+		AminoAcidSequence aminoAcidSequence = new AminoAcidSequence(aminoacids, molecularMass, sequenceSignature);
+		// Choose protein type based on features
+		if(molecularMass > 30000)
+		{
+			Stats.enzymeProteinsCreated++;
+			return new EnzymeProtein(aminoAcidSequence);
+		}
+		else if(aminoacids.size() > 100)
+		{
+			Stats.transporterProteinsCreated++;
+			return new TransporterProtein(aminoAcidSequence);
+		}
+		else if(aminoacids.contains(AminoAcid.Tryptophan) || aminoacids.contains(AminoAcid.Serine))
+		{
+			Stats.regulatoryProteinCreated++;
+			return new RegulatoryProtein(aminoAcidSequence, this.sourceDNA);
+		}
+		else
+		{
+			Stats.genericProteinsCreated++;
+			return new Protein(aminoAcidSequence); // fallback, could be your original Protein
+		}
 	}
 }

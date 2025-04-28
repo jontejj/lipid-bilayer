@@ -1,4 +1,4 @@
-/* Copyright 2018 jonatanjonsson
+/* Copyright 2025 jonatanjonsson
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,33 +12,17 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.atoms;
+package com.github.jontejj.cell.evolution.proteins;
 
-public enum ChemicalGroup
+import com.github.jontejj.cell.evolution.AminoAcidSequence;
+import com.github.jontejj.cell.evolution.Cytoplasm;
+
+public abstract class FunctionalProtein extends Protein
 {
-	HYDROGEN(1),
-	ALKALI(1),
-	ALKALINE_EARTH_METALS(2),
-	COINAGE_METALS(null),
-	TRIELS(3),
-	/**
-	 * +4 - -4
-	 */
-	TETRELS(4),
-	PNICTOGENS(-3),
-	CHALCOGENS(-2),
-	HALOGENS(-1),
-	NOBLE_GASES(0);
-
-	private final Integer typicalValance;
-
-	ChemicalGroup(Integer typicalValance)
+	public FunctionalProtein(AminoAcidSequence aminoAcidSequence)
 	{
-		this.typicalValance = typicalValance;
+		super(aminoAcidSequence);
 	}
 
-	public Integer typicalValance()
-	{
-		return typicalValance;
-	}
+	public abstract void performFunction(Cytoplasm env);
 }

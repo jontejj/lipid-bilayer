@@ -14,10 +14,16 @@
  */
 package com.github.jontejj.cell.evolution;
 
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+import com.google.errorprone.annotations.Immutable;
+
 /**
  * mRNA is built up from multiple codons, which itself contains several
  * nucleobases; cytosine [C], guanine [G], adenine [A] or thymine [T].
  */
+@Immutable
 public record Codon(Nucleobases first, Nucleobases middle, Nucleobases last)
 {
 	public boolean isDNAForSure()
@@ -26,5 +32,35 @@ public record Codon(Nucleobases first, Nucleobases middle, Nucleobases last)
 			return true;
 
 		return false;
+	}
+
+	private static final Map<Nucleobases, Map<Nucleobases, Map<Nucleobases, Codon>>> codonPool = Maps.newHashMap();
+
+	public static Codon get(Nucleobases first, Nucleobases middle, Nucleobases last)
+	{
+		return codonPool.get(first).get(middle).get(last);
+	}
+
+	public static Codon getOrInitialize(Nucleobases first, Nucleobases middle, Nucleobases last)
+	{
+		Map<Nucleobases, Map<Nucleobases, Codon>> firstLevel = codonPool.get(first);
+		if(firstLevel == null)
+		{
+			firstLevel = Maps.newHashMap();
+			codonPool.put(first, firstLevel);
+		}
+		Map<Nucleobases, Codon> middleLevel = firstLevel.get(middle);
+		if(middleLevel == null)
+		{
+			middleLevel = Maps.newHashMap();
+			firstLevel.put(middle, middleLevel);
+		}
+		Codon lastLevel = middleLevel.get(last);
+		if(lastLevel == null)
+		{
+			lastLevel = new Codon(first, middle, last);
+			middleLevel.put(last, lastLevel);
+		}
+		return lastLevel;
 	}
 }

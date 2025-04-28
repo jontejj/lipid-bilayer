@@ -69,6 +69,11 @@ public enum AminoAcid
 		return shortName;
 	}
 
+	public String shortName()
+	{
+		return shortName;
+	}
+
 	public double molecularMass()
 	{
 		return molecularMass;
@@ -81,88 +86,88 @@ public enum AminoAcid
 		aminoAcids = Maps.newHashMap();
 
 		// First letter Uracil
-		aminoAcids.put(new Codon(URACIL, URACIL, URACIL), Phenylalanine);
-		aminoAcids.put(new Codon(URACIL, URACIL, CYTOSINE), Phenylalanine);
-		aminoAcids.put(new Codon(URACIL, URACIL, ADENINE), Leucine);
-		aminoAcids.put(new Codon(URACIL, URACIL, GUANINE), Leucine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, URACIL, URACIL), Phenylalanine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, URACIL, CYTOSINE), Phenylalanine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, URACIL, ADENINE), Leucine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, URACIL, GUANINE), Leucine);
 
-		aminoAcids.put(new Codon(URACIL, CYTOSINE, URACIL), Serine);
-		aminoAcids.put(new Codon(URACIL, CYTOSINE, CYTOSINE), Serine);
-		aminoAcids.put(new Codon(URACIL, CYTOSINE, ADENINE), Serine);
-		aminoAcids.put(new Codon(URACIL, CYTOSINE, GUANINE), Serine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, CYTOSINE, URACIL), Serine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, CYTOSINE, CYTOSINE), Serine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, CYTOSINE, ADENINE), Serine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, CYTOSINE, GUANINE), Serine);
 
-		aminoAcids.put(new Codon(URACIL, ADENINE, URACIL), Tyrosine);
-		aminoAcids.put(new Codon(URACIL, ADENINE, CYTOSINE), Tyrosine);
-		aminoAcids.put(new Codon(URACIL, ADENINE, ADENINE), null);
-		aminoAcids.put(new Codon(URACIL, ADENINE, GUANINE), null);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, ADENINE, URACIL), Tyrosine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, ADENINE, CYTOSINE), Tyrosine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, ADENINE, ADENINE), null);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, ADENINE, GUANINE), null);
 
-		aminoAcids.put(new Codon(URACIL, GUANINE, URACIL), Cysteine);
-		aminoAcids.put(new Codon(URACIL, GUANINE, CYTOSINE), Cysteine);
-		aminoAcids.put(new Codon(URACIL, GUANINE, ADENINE), null);
-		aminoAcids.put(new Codon(URACIL, GUANINE, GUANINE), Tryptophan);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, GUANINE, URACIL), Cysteine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, GUANINE, CYTOSINE), Cysteine);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, GUANINE, ADENINE), null);
+		aminoAcids.put(Codon.getOrInitialize(URACIL, GUANINE, GUANINE), Tryptophan);
 
 		// First letter Cytosine
-		aminoAcids.put(new Codon(CYTOSINE, URACIL, URACIL), Leucine);
-		aminoAcids.put(new Codon(CYTOSINE, URACIL, CYTOSINE), Leucine);
-		aminoAcids.put(new Codon(CYTOSINE, URACIL, ADENINE), Leucine);
-		aminoAcids.put(new Codon(CYTOSINE, URACIL, GUANINE), Leucine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, URACIL, URACIL), Leucine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, URACIL, CYTOSINE), Leucine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, URACIL, ADENINE), Leucine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, URACIL, GUANINE), Leucine);
 
-		aminoAcids.put(new Codon(CYTOSINE, CYTOSINE, URACIL), Proline);
-		aminoAcids.put(new Codon(CYTOSINE, CYTOSINE, CYTOSINE), Proline);
-		aminoAcids.put(new Codon(CYTOSINE, CYTOSINE, ADENINE), Proline);
-		aminoAcids.put(new Codon(CYTOSINE, CYTOSINE, GUANINE), Proline);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, CYTOSINE, URACIL), Proline);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, CYTOSINE, CYTOSINE), Proline);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, CYTOSINE, ADENINE), Proline);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, CYTOSINE, GUANINE), Proline);
 
-		aminoAcids.put(new Codon(CYTOSINE, ADENINE, URACIL), Histidine);
-		aminoAcids.put(new Codon(CYTOSINE, ADENINE, CYTOSINE), Histidine);
-		aminoAcids.put(new Codon(CYTOSINE, ADENINE, ADENINE), Glutamine);
-		aminoAcids.put(new Codon(CYTOSINE, ADENINE, GUANINE), Glutamine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, ADENINE, URACIL), Histidine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, ADENINE, CYTOSINE), Histidine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, ADENINE, ADENINE), Glutamine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, ADENINE, GUANINE), Glutamine);
 
-		aminoAcids.put(new Codon(CYTOSINE, GUANINE, URACIL), Arginine);
-		aminoAcids.put(new Codon(CYTOSINE, GUANINE, CYTOSINE), Arginine);
-		aminoAcids.put(new Codon(CYTOSINE, GUANINE, ADENINE), Arginine);
-		aminoAcids.put(new Codon(CYTOSINE, GUANINE, GUANINE), Arginine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, GUANINE, URACIL), Arginine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, GUANINE, CYTOSINE), Arginine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, GUANINE, ADENINE), Arginine);
+		aminoAcids.put(Codon.getOrInitialize(CYTOSINE, GUANINE, GUANINE), Arginine);
 
 		// First letter Adenine
-		aminoAcids.put(new Codon(ADENINE, URACIL, URACIL), Isoleucine);
-		aminoAcids.put(new Codon(ADENINE, URACIL, CYTOSINE), Isoleucine);
-		aminoAcids.put(new Codon(ADENINE, URACIL, ADENINE), Isoleucine);
-		aminoAcids.put(new Codon(ADENINE, URACIL, GUANINE), Methionine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, URACIL, URACIL), Isoleucine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, URACIL, CYTOSINE), Isoleucine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, URACIL, ADENINE), Isoleucine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, URACIL, GUANINE), Methionine);
 
-		aminoAcids.put(new Codon(ADENINE, CYTOSINE, URACIL), Threonine);
-		aminoAcids.put(new Codon(ADENINE, CYTOSINE, CYTOSINE), Threonine);
-		aminoAcids.put(new Codon(ADENINE, CYTOSINE, ADENINE), Threonine);
-		aminoAcids.put(new Codon(ADENINE, CYTOSINE, GUANINE), Threonine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, CYTOSINE, URACIL), Threonine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, CYTOSINE, CYTOSINE), Threonine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, CYTOSINE, ADENINE), Threonine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, CYTOSINE, GUANINE), Threonine);
 
-		aminoAcids.put(new Codon(ADENINE, ADENINE, URACIL), Asparagine);
-		aminoAcids.put(new Codon(ADENINE, ADENINE, CYTOSINE), Asparagine);
-		aminoAcids.put(new Codon(ADENINE, ADENINE, ADENINE), Lysine);
-		aminoAcids.put(new Codon(ADENINE, ADENINE, GUANINE), Lysine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, ADENINE, URACIL), Asparagine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, ADENINE, CYTOSINE), Asparagine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, ADENINE, ADENINE), Lysine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, ADENINE, GUANINE), Lysine);
 
-		aminoAcids.put(new Codon(ADENINE, GUANINE, URACIL), Serine);
-		aminoAcids.put(new Codon(ADENINE, GUANINE, CYTOSINE), Serine);
-		aminoAcids.put(new Codon(ADENINE, GUANINE, ADENINE), Arginine);
-		aminoAcids.put(new Codon(ADENINE, GUANINE, GUANINE), Arginine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, GUANINE, URACIL), Serine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, GUANINE, CYTOSINE), Serine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, GUANINE, ADENINE), Arginine);
+		aminoAcids.put(Codon.getOrInitialize(ADENINE, GUANINE, GUANINE), Arginine);
 
 		// First letter Guanine
-		aminoAcids.put(new Codon(GUANINE, URACIL, URACIL), Valine);
-		aminoAcids.put(new Codon(GUANINE, URACIL, CYTOSINE), Valine);
-		aminoAcids.put(new Codon(GUANINE, URACIL, ADENINE), Valine);
-		aminoAcids.put(new Codon(GUANINE, URACIL, GUANINE), Valine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, URACIL, URACIL), Valine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, URACIL, CYTOSINE), Valine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, URACIL, ADENINE), Valine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, URACIL, GUANINE), Valine);
 
-		aminoAcids.put(new Codon(GUANINE, CYTOSINE, URACIL), Alanine);
-		aminoAcids.put(new Codon(GUANINE, CYTOSINE, CYTOSINE), Alanine);
-		aminoAcids.put(new Codon(GUANINE, CYTOSINE, ADENINE), Alanine);
-		aminoAcids.put(new Codon(GUANINE, CYTOSINE, GUANINE), Alanine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, CYTOSINE, URACIL), Alanine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, CYTOSINE, CYTOSINE), Alanine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, CYTOSINE, ADENINE), Alanine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, CYTOSINE, GUANINE), Alanine);
 
-		aminoAcids.put(new Codon(GUANINE, ADENINE, URACIL), Aspartate);
-		aminoAcids.put(new Codon(GUANINE, ADENINE, CYTOSINE), Aspartate);
-		aminoAcids.put(new Codon(GUANINE, ADENINE, ADENINE), Glutamate);
-		aminoAcids.put(new Codon(GUANINE, ADENINE, GUANINE), Glutamate);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, ADENINE, URACIL), Aspartate);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, ADENINE, CYTOSINE), Aspartate);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, ADENINE, ADENINE), Glutamate);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, ADENINE, GUANINE), Glutamate);
 
-		aminoAcids.put(new Codon(GUANINE, GUANINE, URACIL), Glycine);
-		aminoAcids.put(new Codon(GUANINE, GUANINE, CYTOSINE), Glycine);
-		aminoAcids.put(new Codon(GUANINE, GUANINE, ADENINE), Glycine);
-		aminoAcids.put(new Codon(GUANINE, GUANINE, GUANINE), Glycine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, GUANINE, URACIL), Glycine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, GUANINE, CYTOSINE), Glycine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, GUANINE, ADENINE), Glycine);
+		aminoAcids.put(Codon.getOrInitialize(GUANINE, GUANINE, GUANINE), Glycine);
 	}
 
 	/**

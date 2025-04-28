@@ -6,8 +6,8 @@
 	<artifactId>cell</artifactId>
 	<version>1.0</version>
 	<properties>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>24</maven.compiler.source>
+		<maven.compiler.target>24</maven.compiler.target>
 		<!-- Change the nd4j.backend property to nd4j-cuda-X-platform to use CUDA 
 			GPUs -->
 		<!-- <nd4j.backend>nd4j-cuda-10.2-platform</nd4j.backend> -->
@@ -88,11 +88,16 @@
 			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.dyn4j</groupId>
+            <artifactId>dyn4j</artifactId>
+            <version>5.0.2</version>
+        </dependency>
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<!--<version>24.0.1</version>-->
+            <!--<version>24.0.1</version>-->
 			<version>17.0.15</version>
 		</dependency>
         <dependency>

@@ -19,5 +19,4 @@ package com.github.jontejj.cell.atoms;
  */
 public enum Group
 {
-	// TODO:...
 }

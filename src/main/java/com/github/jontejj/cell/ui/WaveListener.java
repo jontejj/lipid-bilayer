@@ -24,8 +24,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.shape.Line;
 
-@SuppressWarnings("restriction")
-public class WaveListener implements ObjectUpdatedListener
+class WaveListener implements ObjectUpdatedListener
 {
 	private final Group waveGroup;
 	private double previousEndX;

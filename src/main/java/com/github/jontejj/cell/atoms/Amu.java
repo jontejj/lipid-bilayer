@@ -26,6 +26,11 @@ public final class Amu
 		this.amu = amu;
 	}
 
+	public double amu()
+	{
+		return amu;
+	}
+
 	public static Amu of(double amu)
 	{
 		return new Amu(amu);

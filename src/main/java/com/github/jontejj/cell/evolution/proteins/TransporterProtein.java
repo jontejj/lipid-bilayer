@@ -1,4 +1,4 @@
-/* Copyright 2021 jonatanjonsson
+/* Copyright 2025 jonatanjonsson
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,18 +12,22 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.octree;
+package com.github.jontejj.cell.evolution.proteins;
 
-import com.github.jontejj.cell.physics.PhysicalObject;
+import com.github.jontejj.cell.evolution.AminoAcidSequence;
+import com.github.jontejj.cell.evolution.Cytoplasm;
 
-/**
- * @see <a href="https://en.wikipedia.org/wiki/Octree#/media/File:Octree2.svg">octree wiki image</a>
- */
-public class Octree
+public class TransporterProtein extends FunctionalProtein
 {
-
-	public void add(PhysicalObject obj)
+	public TransporterProtein(AminoAcidSequence aminoAcidSequence)
 	{
+		super(aminoAcidSequence);
+	}
 
+	@Override
+	public void performFunction(Cytoplasm env)
+	{
+		// TODO: the amount should be taken from outside of the cell (not appear out of nothing)
+		env.increaseResourceAmount(5.0 * molecularMass() / 1000.0); // Bigger transporter moves more!
 	}
 }

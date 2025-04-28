@@ -18,6 +18,7 @@ import java.awt.EventQueue;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import com.github.jontejj.cell.physics.ObjectUpdatedListener;
 import com.github.jontejj.cell.physics.PhysicalObject;
@@ -27,6 +28,7 @@ import com.github.jontejj.cell.physics.World;
 
 public class SwingUI extends JFrame
 {
+	private static final long serialVersionUID = 1L;
 	private final MyCanvas myCanvas;
 
 	public SwingUI()
@@ -60,7 +62,7 @@ public class SwingUI extends JFrame
 		setTitle("Simulation");
 		setSize(1024, 768);
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	}
 
 	public static void main(String[] args) throws InvocationTargetException, InterruptedException
