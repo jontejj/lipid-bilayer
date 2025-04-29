@@ -19,24 +19,37 @@ import org.dyn4j.samples.framework.SimulationBody;
 import com.github.jontejj.cell.evolution.Eatable;
 import com.github.jontejj.cell.evolution.game.CellWorld;
 
-public class Apple extends SimulationBody implements Eatable
+public class DeadCell extends SimulationBody implements Eatable
 {
+	private final double molecularMass;
+
+	/**
+	 * @param molecularMass from a dead cell this would be the sum of all nucleotides of its genome in the nucleus and perhaps the total
+	 *            molecular mass of its proteins
+	 */
+	public DeadCell(double molecularMass)
+	{
+		this.molecularMass = molecularMass;
+	}
 
 	@Override
 	public double molecularMass()
 	{
-		return 4000;
+		return molecularMass;
 	}
 
 	@Override
 	public void onEaten(CellWorld world)
 	{
 		world.deferRemoval(this);
+		// TODO: this causes Exception in thread "Thread-0" java.util.ConcurrentModificationException because it occurs during collision
+		// handling
+		// world.removeBody(this);
 	}
 
 	@Override
 	public String toString()
 	{
-		return getClass().getSimpleName();
+		return "Dead cell with " + molecularMass + " molecular mass";
 	}
 }

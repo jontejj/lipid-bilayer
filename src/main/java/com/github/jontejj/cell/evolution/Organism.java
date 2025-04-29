@@ -18,6 +18,7 @@ import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.samples.framework.SimulationBody;
+import org.dyn4j.world.World;
 
 import com.google.common.base.Optional;
 
@@ -25,26 +26,36 @@ public abstract class Organism extends SimulationBody
 {
 	private double circleRadius;
 	private BodyFixture fixture;
+	private final Cytoplasm cytoplasm;
 
-	public Organism()
+	public Organism(Nucleus nucleus, World<SimulationBody> world)
 	{
-		this(1.0);
+		this(nucleus, world, 1.0);
 	}
 
-	public Organism(double circleRadius)
+	public Organism(Nucleus nucleus, World<SimulationBody> world, double circleRadius)
 	{
 		this.circleRadius = circleRadius;
 		fixture = addFixture(Geometry.createCircle(circleRadius)); // a circular cell body
 		setMass(MassType.NORMAL);
+		this.cytoplasm = new Cytoplasm(nucleus, world);
 	}
 
-	public abstract void timestep();
+	/**
+	 * @return true if the organism has reached a critical resource level and is about to die
+	 */
+	public abstract boolean timestep();
 
 	public abstract Optional<Organism> binaryFission();
 
 	public double circleRadius()
 	{
 		return circleRadius;
+	}
+
+	public Cytoplasm cytoplasm()
+	{
+		return cytoplasm;
 	}
 
 	void adjustBodySize(double sizeToAdd)

@@ -14,18 +14,17 @@
  */
 package com.github.jontejj.cell.evolution;
 
-import org.dyn4j.samples.framework.SimulationBody;
-import org.dyn4j.world.World;
+import com.github.jontejj.cell.evolution.game.CellWorld;
 
 public interface Eatable
 {
 	/**
 	 * @return How much the food gives to the worm
 	 */
-	int getCalories();
+	double molecularMass();
 
 	/**
 	 * Food reaction (e.g., disappear after eaten)
 	 */
-	void onEaten(World<SimulationBody> world);
+	void onEaten(CellWorld world);
 }

@@ -152,6 +152,7 @@ public class DNA
 		List<Nucleobases> newNucleotides = Lists.newArrayList();
 		for(Nucleobases base : nucleotides)
 		{
+			// TODO: only make a Lists.newArrayList(); if there are mutations, this will minimize the required memory by a lot
 			if(RND.nextInt(100000) == 1)
 			{
 				// Mutation

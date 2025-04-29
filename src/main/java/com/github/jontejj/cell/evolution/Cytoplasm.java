@@ -28,6 +28,8 @@ import com.google.common.collect.ImmutableMap;
 
 public class Cytoplasm
 {
+	private static double ATP_MOLECULAR_MASS = 507.18;
+
 	private long atp = 1000;
 	private Map<Nucleobases, Long> nucleotides = new EnumMap<>(Nucleobases.class);
 	private Map<AminoAcid, Long> aminoAcids = new EnumMap<>(AminoAcid.class);
@@ -36,6 +38,10 @@ public class Cytoplasm
 	private final List<Protein> proteinsInCytoplasm;
 	private SimulationBody lastWormSegment;
 	private World<SimulationBody> world;
+
+	private int apoptosisWarningCounter = 0;
+	private static final int APOPTOSIS_THRESHOLD_TICKS = 1000;
+	private static final long NUCLEOTIDE_MIN_THRESHOLD = 100L;
 
 	public Cytoplasm(Nucleus nucleus, World<SimulationBody> world)
 	{
@@ -50,6 +56,54 @@ public class Cytoplasm
 		{
 			aminoAcids.put(aa, 20000L);
 		}
+	}
+
+	public boolean shouldTriggerApoptosis()
+	{
+		boolean criticalNucleotideShortage = false;
+		for(Nucleobases base : Nucleobases.values())
+		{
+			if(nucleotides.getOrDefault(base, 0L) < NUCLEOTIDE_MIN_THRESHOLD)
+			{
+				criticalNucleotideShortage = true;
+				break;
+			}
+		}
+		if(criticalNucleotideShortage)
+		{
+			apoptosisWarningCounter++;
+		}
+		else
+		{
+			apoptosisWarningCounter = 0; // reset if recovered
+		}
+
+		boolean shouldTriggerApoptosis = apoptosisWarningCounter >= APOPTOSIS_THRESHOLD_TICKS;
+		if(shouldTriggerApoptosis)
+			return true;
+		return false;
+	}
+
+	public double totalMolecularMass()
+	{
+		double totalMass = 0.0;
+		totalMass += nucleus.genome().molecularMass();
+		for(Map.Entry<Nucleobases, Long> entry : nucleotides.entrySet())
+		{
+			totalMass += entry.getValue() * entry.getKey().molecularMass();
+		}
+		for(Map.Entry<AminoAcid, Long> entry : aminoAcids.entrySet())
+		{
+			totalMass += entry.getValue() * entry.getKey().molecularMass();
+		}
+		for(Protein p : proteinsInCytoplasm)
+		{
+			totalMass += p.molecularMass();
+		}
+
+		totalMass += atp * ATP_MOLECULAR_MASS;
+
+		return totalMass;
 	}
 
 	public void timestep()

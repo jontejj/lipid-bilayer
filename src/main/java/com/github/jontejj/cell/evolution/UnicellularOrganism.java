@@ -22,36 +22,38 @@ import com.google.common.base.Optional;
 
 public class UnicellularOrganism extends Organism implements HasMouth
 {
-	private final Cytoplasm cytoplasm;
 	private final String name;
 	private final Nucleus nucleus;
 
 	public UnicellularOrganism(String name, Nucleus nucleus, World<SimulationBody> world)
 	{
-		super();
+		super(nucleus, world);
 		this.name = name;
 		this.nucleus = nucleus;
-		this.cytoplasm = new Cytoplasm(nucleus, world);
+
 	}
 
 	public UnicellularOrganism(String name, Nucleus nucleus, World<SimulationBody> world, double circleRadius)
 	{
-		super(circleRadius);
+		super(nucleus, world, circleRadius);
 		this.name = name;
 		this.nucleus = nucleus;
-		this.cytoplasm = new Cytoplasm(nucleus, world);
 	}
 
 	@Override
-	public void timestep()
+	public boolean timestep()
 	{
-		cytoplasm.timestep();
+		cytoplasm().timestep();
+
+		if(cytoplasm().shouldTriggerApoptosis())
+			return true;
+		return false;
 	}
 
 	@Override
 	public String toString()
 	{
-		return name + ": " + cytoplasm;
+		return name + ": " + cytoplasm();
 	}
 
 	public String name()
@@ -59,19 +61,14 @@ public class UnicellularOrganism extends Organism implements HasMouth
 		return name;
 	}
 
-	public Cytoplasm cytoplasm()
-	{
-		return cytoplasm;
-	}
-
 	@Override
 	public Optional<Organism> binaryFission()
 	{
-		if(cytoplasm.supportsBinaryFission(nucleus.genome().totalNucleotideCounts()))
+		if(cytoplasm().supportsBinaryFission(nucleus.genome().totalNucleotideCounts()))
 		{
-			Nucleus newNucleus = nucleus.binaryFission(cytoplasm);
+			Nucleus newNucleus = nucleus.binaryFission(cytoplasm());
 			adjustBodySize(-0.5);
-			UnicellularOrganism newOrganism = new UnicellularOrganism(name, newNucleus, cytoplasm.world(), circleRadius());
+			UnicellularOrganism newOrganism = new UnicellularOrganism(name, newNucleus, cytoplasm().world(), circleRadius());
 			newOrganism.cytoplasm().setLastWormSegment(newOrganism);
 			Vector2 offset = new Vector2(0.5, 0.0); // New organism appears 0.5 units to the right
 			newOrganism.translate(this.getWorldCenter().sum(offset));
@@ -91,6 +88,7 @@ public class UnicellularOrganism extends Organism implements HasMouth
 	@Override
 	public void eat(Eatable food)
 	{
-		cytoplasm.increaseResourceAmountForAllNucleotides(food.getCalories());
+		long averageAmount = (long) (food.molecularMass() / Nucleobases.averageMolecularMass());
+		cytoplasm().increaseResourceAmountForAllNucleotides(averageAmount);
 	}
 }

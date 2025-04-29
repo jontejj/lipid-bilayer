@@ -17,7 +17,6 @@ package com.github.jontejj.cell.evolution.game;
 import org.dyn4j.dynamics.contact.Contact;
 import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.world.ContactCollisionData;
-import org.dyn4j.world.World;
 import org.dyn4j.world.listener.ContactListenerAdapter;
 
 import com.github.jontejj.cell.evolution.Eatable;
@@ -25,9 +24,9 @@ import com.github.jontejj.cell.evolution.HasMouth;
 
 public class MyContactListener extends ContactListenerAdapter<SimulationBody>
 {
-	private final World<SimulationBody> world;
+	private final CellWorld world;
 
-	public MyContactListener(World<SimulationBody> world)
+	public MyContactListener(CellWorld world)
 	{
 		this.world = world;
 	}

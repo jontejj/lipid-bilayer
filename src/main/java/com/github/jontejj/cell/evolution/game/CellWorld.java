@@ -28,6 +28,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,7 +38,9 @@ import org.assertj.core.util.Sets;
 import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
+import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.samples.framework.Camera;
+import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.samples.framework.SimulationFrame;
 import org.dyn4j.world.PhysicsWorld;
 
@@ -47,6 +51,7 @@ import com.github.jontejj.cell.evolution.Organism;
 import com.github.jontejj.cell.evolution.Stats;
 import com.github.jontejj.cell.evolution.UnicellularOrganism;
 import com.github.jontejj.cell.evolution.food.Apple;
+import com.github.jontejj.cell.evolution.food.DeadCell;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 
@@ -54,6 +59,7 @@ public class CellWorld extends SimulationFrame
 {
 	private static final long serialVersionUID = 5663760293144882635L;
 	private Set<Organism> organisms;
+	private final List<SimulationBody> bodiesToRemove = new ArrayList<>();
 
 	public CellWorld()
 	{
@@ -64,7 +70,7 @@ public class CellWorld extends SimulationFrame
 	protected void initializeWorld()
 	{
 		world.setGravity(PhysicsWorld.ZERO_GRAVITY);
-		world.addContactListener(new MyContactListener(world));
+		world.addContactListener(new MyContactListener(this));
 		// double wallWidth = 0.5;
 		// double worldSize = 30;
 		// double offset = worldSize / 2.0 - wallWidth / 2.0;
@@ -110,18 +116,28 @@ public class CellWorld extends SimulationFrame
 		this.world.addBody(apple);
 	}
 
+	private void addDeadCellForOrganism(Organism organism)
+	{
+
+		Rectangle shape = Geometry.createRectangle(0.5, 0.5);
+		DeadCell deadCell = new DeadCell(organism.cytoplasm().totalMolecularMass());
+		deadCell.addFixture(shape);
+		deadCell.setMass(MassType.NORMAL);
+		deadCell.translate(-1.0, 2.0);
+		this.world.addBody(deadCell);
+	}
+
 	private Set<Organism> createOrganisms()
 	{
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		Set<Organism> initialOrganisms = Sets.newHashSet();
 		// E. coli (bacteria) have around 4400 protein coding genes
-		stopwatch = Stopwatch.createStarted();
-		UnicellularOrganism eColi = new UnicellularOrganism("E. coli", new Nucleus(Genome.generate(4400)), this.world);
-		eColi.cytoplasm().setLastWormSegment(eColi);
-		System.out.println("Time to generate genome: " + stopwatch);
+		// stopwatch = Stopwatch.createStarted();
+		// UnicellularOrganism eColi = new UnicellularOrganism("E. coli", new Nucleus(Genome.generate(4400)), this.world);
+		// eColi.cytoplasm().setLastWormSegment(eColi);
+		// System.out.println("Time to generate genome: " + stopwatch);
 		// TODO: initialOrganisms.add(eColi); E.coli is currently too heavy
-
-		stopwatch = Stopwatch.createStarted();
+		// stopwatch = Stopwatch.createStarted();
 		UnicellularOrganism mycoplasmaGenitalium = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(480)), this.world);
 		mycoplasmaGenitalium.cytoplasm().setLastWormSegment(mycoplasmaGenitalium);
 		System.out.println("Time to generate genome: " + stopwatch);
@@ -133,13 +149,21 @@ public class CellWorld extends SimulationFrame
 	private void oneTimestep()
 	{
 		Set<Organism> newOrganisms = Sets.newHashSet();
+		Set<Organism> deadOrganisms = Sets.newHashSet();
 		for(Organism organism : organisms)
 		{
 			Stopwatch stopwatch = Stopwatch.createStarted();
-			organism.timestep();
+			boolean organismShouldDie = organism.timestep();
 			System.out.println("Time to execute timestep: " + stopwatch);
 			System.out.println("Stats: " + Stats.asString());
 			System.out.println("Cell " + organism);
+
+			if(organismShouldDie)
+			{
+				world.removeBody(organism);
+				addDeadCellForOrganism(organism);
+				deadOrganisms.add(organism);
+			}
 			stopwatch = Stopwatch.createStarted();
 			Optional<Organism> binaryFissionResult = organism.binaryFission();
 			if(binaryFissionResult.isPresent())
@@ -150,7 +174,19 @@ public class CellWorld extends SimulationFrame
 			newOrganisms.addAll(binaryFissionResult.asSet());
 		}
 		organisms.addAll(newOrganisms);
+		organisms.removeAll(deadOrganisms);
+		if(organisms.isEmpty())
+		{
+			organisms = createOrganisms();
+			for(Organism organism : newOrganisms)
+			{
+				organism.translate(-1.0, 10.0);
+			}
+			newOrganisms = organisms;
+		}
 		newOrganisms.forEach(org -> this.world.addBody(org));
+		removeDeletedBodies();
+
 	}
 
 	@Override
@@ -177,7 +213,7 @@ public class CellWorld extends SimulationFrame
 		{
 			g.drawString("Name: " + ((UnicellularOrganism) org).name(), 20, y);
 			y += 15;
-			Map<Nucleobases, Long> nucleotideResources = ((UnicellularOrganism) org).cytoplasm().nucleotideResources();
+			Map<Nucleobases, Long> nucleotideResources = org.cytoplasm().nucleotideResources();
 			for(Entry<Nucleobases, Long> entry : nucleotideResources.entrySet())
 			{
 				g.drawString("" + entry.getKey() + ":" + entry.getValue(), 20, y);
@@ -194,6 +230,23 @@ public class CellWorld extends SimulationFrame
 	{
 		oneTimestep();
 		super.handleEvents();
+	}
+
+	public void deferRemoval(SimulationBody body)
+	{
+		bodiesToRemove.add(body);
+	}
+
+	/**
+	 * Runs after the collision detection is done to avoid ConcurrentModificationException
+	 */
+	void removeDeletedBodies()
+	{
+		for(SimulationBody body : bodiesToRemove)
+		{
+			world.removeBody(body);
+		}
+		bodiesToRemove.clear();
 	}
 
 	public static void main(String[] args)

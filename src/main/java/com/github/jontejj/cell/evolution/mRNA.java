@@ -88,15 +88,15 @@ public class mRNA
 				return new AminoAcidSynthaseProtein(aminoAcidSequence);
 			return new EnzymeProtein(aminoAcidSequence);
 		}
-		else if(aminoacids.size() > 100)
-		{
-			Stats.transporterProteinsCreated++;
-			return new TransporterProtein(aminoAcidSequence);
-		}
 		else if(aminoacids.contains(AminoAcid.Tryptophan) || aminoacids.contains(AminoAcid.Serine))
 		{
 			Stats.regulatoryProteinCreated++;
 			return new RegulatoryProtein(aminoAcidSequence, this.sourceDNA);
+		}
+		else if(aminoacids.size() > 50)
+		{
+			Stats.transporterProteinsCreated++;
+			return new TransporterProtein(aminoAcidSequence);
 		}
 		else
 		{

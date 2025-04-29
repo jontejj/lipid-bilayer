@@ -64,6 +64,7 @@ public class Genome
 
 	public Genome replicate(Cytoplasm cytoplasm)
 	{
+		// TODO: use dnas.parallelStream() and make decreaseResourceAmount in Cytoplasm thread-safe?
 		List<DNA> replicatedDnas = dnas.stream().map(dna -> dna.replicate(cytoplasm)).collect(Collectors.toList());
 		return new Genome(replicatedDnas);
 	}
