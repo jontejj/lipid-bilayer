@@ -14,7 +14,9 @@
  */
 package com.github.jontejj.cell.evolution;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -28,11 +30,31 @@ public class Genome
 	private final static Random RND = new Random();
 	private final List<DNA> dnas;
 	private final double molecularMass;
+	private final Map<Nucleobases, Integer> totalNucleotideCounts;
 
 	public Genome(List<DNA> dnas)
 	{
 		this.dnas = dnas;
 		this.molecularMass = dnas.stream().mapToDouble(DNA::molecularMass).sum();
+		this.totalNucleotideCounts = calculateTotalNucleotideCounts();
+	}
+
+	private Map<Nucleobases, Integer> calculateTotalNucleotideCounts()
+	{
+		Map<Nucleobases, Integer> total = new EnumMap<>(Nucleobases.class);
+		for(DNA dna : dnas)
+		{
+			for(Map.Entry<Nucleobases, Integer> entry : dna.nucleotideCounts().entrySet())
+			{
+				total.merge(entry.getKey(), entry.getValue(), Integer::sum);
+			}
+		}
+		return total;
+	}
+
+	public Map<Nucleobases, Integer> totalNucleotideCounts()
+	{
+		return totalNucleotideCounts;
 	}
 
 	public double molecularMass()
@@ -40,9 +62,9 @@ public class Genome
 		return molecularMass;
 	}
 
-	public Genome replicate()
+	public Genome replicate(Cytoplasm cytoplasm)
 	{
-		List<DNA> replicatedDnas = dnas.stream().map(dna -> dna.replicate()).collect(Collectors.toList());
+		List<DNA> replicatedDnas = dnas.stream().map(dna -> dna.replicate(cytoplasm)).collect(Collectors.toList());
 		return new Genome(replicatedDnas);
 	}
 
@@ -84,7 +106,7 @@ public class Genome
 				// Minimize further the chance of a stop codon appearing
 				if(i % 2 == 0)
 				{
-					if(AminoAcid.translate(Codon.get(base1.toRNA(), base2.toRNA(), base3.toRNA())) == null)
+					if(Codon.get(base1.toRNA(), base2.toRNA(), base3.toRNA()).translate() == null)
 					{
 						continue;
 					}
@@ -104,13 +126,13 @@ public class Genome
 	/**
 	 * @return new proteins created during the timestep
 	 */
-	public List<Protein> timestep()
+	public List<Protein> timestep(Cytoplasm cytoplasm)
 	{
 		List<Protein> newProteins = Lists.newArrayList();
 		for(DNA dna : dnas)
 		{
 			dna.setEuchromatinModeRandomly();
-			newProteins.addAll(dna.transcribe().transform(mRNA -> mRNA.translate()).asSet());
+			newProteins.addAll(dna.transcribe(cytoplasm).transform(mRNA -> mRNA.translate(cytoplasm)).asSet());
 		}
 		return newProteins;
 	}

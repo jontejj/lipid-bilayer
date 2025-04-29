@@ -77,6 +77,11 @@ public enum Nucleobases
 		return othersDna;
 	}
 
+	public static double averageMolecularMass()
+	{
+		return (CYTOSINE.molecularMass() + GUANINE.molecularMass() + ADENINE.molecularMass() + THYMINE.molecularMass() + URACIL.molecularMass()) / 5;
+	}
+
 	public static ImmutableSet<Nucleobases> DNA = Sets.immutableEnumSet(CYTOSINE, GUANINE, ADENINE, THYMINE);
 
 	public static ImmutableSet<Nucleobases> RNA = Sets.immutableEnumSet(CYTOSINE, GUANINE, ADENINE, URACIL);

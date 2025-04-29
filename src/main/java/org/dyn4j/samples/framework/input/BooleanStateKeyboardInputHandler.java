@@ -26,61 +26,71 @@ package org.dyn4j.samples.framework.input;
 
 import java.awt.Component;
 
-public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandler {
+public class BooleanStateKeyboardInputHandler extends AbstractKeyboardInputHandler
+{
 	/** If the key state is active (pressed) */
 	private boolean active;
-	
+
 	/** True if the active state has been handled */
 	private boolean hasBeenHandled;
-	
-	public BooleanStateKeyboardInputHandler(Component component, Key... keys) {
-		super(component, keys);
-		this.active = false;
-		this.hasBeenHandled = false;
-	}
-	
-	public BooleanStateKeyboardInputHandler(Component component, int... keys) {
+
+	public BooleanStateKeyboardInputHandler(Component component, Key ... keys)
+	{
 		super(component, keys);
 		this.active = false;
 		this.hasBeenHandled = false;
 	}
 
+	public BooleanStateKeyboardInputHandler(Component component, int ... keys)
+	{
+		super(component, keys);
+		this.active = false;
+		this.hasBeenHandled = false;
+	}
+
+	@SuppressWarnings("hiding")
 	@Override
-	protected void onKeyPressed() {
+	protected void onKeyPressed()
+	{
 		super.onKeyPressed();
-		
+
 		// save the old state
 		boolean active = this.active;
-		
+
 		// set the state to active
 		this.active = true;
-		
+
 		// if the state transitioned from inactive to active
 		// flag that it needs to be handled
-		if (!active) {
+		if(!active)
+		{
 			this.hasBeenHandled = false;
 		}
 	}
-	
+
 	@Override
-	protected void onKeyReleased() {
+	protected void onKeyReleased()
+	{
 		super.onKeyReleased();
 		this.active = false;
 	}
-	
+
 	@Override
-	public boolean isActive() {
+	public boolean isActive()
+	{
 		return this.active;
 	}
-	
-	public boolean isActiveButNotHandled() {
-		if (this.hasBeenHandled)
+
+	public boolean isActiveButNotHandled()
+	{
+		if(this.hasBeenHandled)
 			return false;
-		
+
 		return this.active;
 	}
-	
-	public void setHasBeenHandled(boolean hasBeenHandled) {
+
+	public void setHasBeenHandled(boolean hasBeenHandled)
+	{
 		this.hasBeenHandled = hasBeenHandled;
 	}
 }

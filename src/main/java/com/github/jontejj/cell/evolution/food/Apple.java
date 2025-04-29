@@ -1,4 +1,4 @@
-/* Copyright 2021 jonatanjonsson
+/* Copyright 2025 jonatanjonsson
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,14 +12,31 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.ui.fouriertransform;
+package com.github.jontejj.cell.evolution.food;
 
-import javafx.application.Application;
+import org.dyn4j.samples.framework.SimulationBody;
+import org.dyn4j.world.World;
 
-public class Main
+import com.github.jontejj.cell.evolution.Eatable;
+
+public class Apple extends SimulationBody implements Eatable
 {
-	public static void main(String[] args)
+
+	@Override
+	public int getCalories()
 	{
-		Application.launch(Fuf.class, args);
+		return 400;
+	}
+
+	@Override
+	public void onEaten(World<SimulationBody> world)
+	{
+		world.removeBody(this);
+	}
+
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName();
 	}
 }

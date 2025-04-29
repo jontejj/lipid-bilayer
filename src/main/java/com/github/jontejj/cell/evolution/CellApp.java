@@ -14,19 +14,24 @@
  */
 package com.github.jontejj.cell.evolution;
 
-import java.io.IOException;
 import java.util.Set;
 
 import org.assertj.core.util.Sets;
+import org.dyn4j.samples.framework.SimulationBody;
+import org.dyn4j.world.World;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 
 public class CellApp
 {
-	public static void main(String[] args) throws IOException
+	public static void main(String[] args)
 	{
-		System.out.println(new DNA(Nucleobases.fromString("AUGCCAGAUCACUAA"), 0).transcribe().get().translate());
+		World<SimulationBody> world = new World<SimulationBody>();
+
+		Cytoplasm minimalCytoplasm = new Cytoplasm(new Nucleus(Genome.generate(4)), world);
+
+		System.out.println(new DNA(Nucleobases.fromString("AUGCCAGAUCACUAA"), 0).transcribe(minimalCytoplasm).get().translate(minimalCytoplasm));
 
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		// String humanGenomeFromFile = Resources.toString(Resources.getResource("human_genome_small.txt"), StandardCharsets.UTF_8);
@@ -38,12 +43,12 @@ public class CellApp
 
 		// E. coli (bacteria) have around 4400 protein coding genes
 		stopwatch = Stopwatch.createStarted();
-		Organism eColi = new UnicellularOrganism("E. coli", new Nucleus(Genome.generate(4400)));
+		Organism eColi = new UnicellularOrganism("E. coli", new Nucleus(Genome.generate(4400)), world);
 		System.out.println("Time to generate genome: " + stopwatch);
 		organisms.add(eColi);
 
 		stopwatch = Stopwatch.createStarted();
-		Organism mycoplasmaGenitalium = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(480)));
+		Organism mycoplasmaGenitalium = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(480)), world);
 		System.out.println("Time to generate genome: " + stopwatch);
 		organisms.add(mycoplasmaGenitalium);
 

@@ -130,8 +130,8 @@ public abstract class SimulationFrame extends JFrame
 	 * By default creates a 800x600 canvas.
 	 * 
 	 * @param name the frame name
-	 * @param scale the pixels per meter scale factor
 	 */
+	@SuppressWarnings("static-access")
 	public SimulationFrame(String name)
 	{
 		super(name);
@@ -273,6 +273,7 @@ public abstract class SimulationFrame extends JFrame
 	/**
 	 * Initializes the camera position and scale.
 	 */
+	@SuppressWarnings("hiding")
 	protected void initializeCamera(Camera camera)
 	{
 		camera.scale = 16.0;
@@ -349,6 +350,7 @@ public abstract class SimulationFrame extends JFrame
 	 * The method calling the necessary methods to update
 	 * the game, graphics, and poll for input.
 	 */
+	@SuppressWarnings("cast")
 	private void gameLoop()
 	{
 		// get the graphics object to render to
@@ -454,6 +456,7 @@ public abstract class SimulationFrame extends JFrame
 	 * @param g the graphics object to render to
 	 * @param elapsedTime the elapsed time from the last update
 	 */
+	@SuppressWarnings("cast")
 	protected void render(Graphics2D g, double elapsedTime)
 	{
 		g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);

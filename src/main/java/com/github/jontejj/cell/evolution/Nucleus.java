@@ -31,10 +31,10 @@ public class Nucleus
 		this.genome = genome;
 	}
 
-	public Nucleus binaryFission()
+	public Nucleus binaryFission(Cytoplasm cytoplasm)
 	{
 		// TODO: also mimic recombination
-		return new Nucleus(genome.replicate());
+		return new Nucleus(genome.replicate(cytoplasm));
 	}
 
 	public Genome genome()
@@ -42,9 +42,9 @@ public class Nucleus
 		return genome;
 	}
 
-	public List<Protein> timestep()
+	public List<Protein> timestep(Cytoplasm cytoplasm)
 	{
-		List<Protein> newProteins = genome.timestep();
+		List<Protein> newProteins = genome.timestep(cytoplasm);
 		return newProteins;
 	}
 

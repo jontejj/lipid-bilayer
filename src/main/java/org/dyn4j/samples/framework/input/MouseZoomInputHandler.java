@@ -26,47 +26,58 @@ package org.dyn4j.samples.framework.input;
 
 import java.awt.Component;
 
-public final class MouseZoomInputHandler extends AbstractMouseInputHandler implements InputHandler {
+@SuppressWarnings({"hiding", "unused"})
+public final class MouseZoomInputHandler extends AbstractMouseInputHandler implements InputHandler
+{
 	private final Object lock;
-	
+
 	private double scale;
 
-	public MouseZoomInputHandler(Component component, int button) {
+	public MouseZoomInputHandler(Component component, int button)
+	{
 		super(component, button);
 		this.lock = new Object();
 		this.scale = 1.0;
 	}
 
 	@Override
-	public boolean isActive() {
+	public boolean isActive()
+	{
 		return false;
 	}
 
 	@Override
-	protected void onMouseWheel(double rotation) {
+	protected void onMouseWheel(double rotation)
+	{
 		super.onMouseWheel(rotation);
-		
+
 		// this happen sometimes on trackpads
-		if (rotation == 0)
+		if(rotation == 0)
 			return;
-		
-    	// input from the mouse should be queued for processing
-    	// to avoid mid-render changes to the camera
-    	// input from AWT is coming in from the main thread of
-    	// AWT, but rendering is performed on a different thread
-    	// as such we should lock on the changes just to be sure
-    	// we don't lose information
-		synchronized (this.lock) {
-			if (rotation > 0) {
+
+		// input from the mouse should be queued for processing
+		// to avoid mid-render changes to the camera
+		// input from AWT is coming in from the main thread of
+		// AWT, but rendering is performed on a different thread
+		// as such we should lock on the changes just to be sure
+		// we don't lose information
+		synchronized(this.lock)
+		{
+			if(rotation > 0)
+			{
 				this.scale *= 0.8;
-			} else {
+			}
+			else
+			{
 				this.scale *= 1.2;
-			}	
+			}
 		}
 	}
-	
-	public double getScaleAndReset() {
-		synchronized (this.lock) {
+
+	public double getScaleAndReset()
+	{
+		synchronized(this.lock)
+		{
 			double scale = this.scale;
 			this.scale = 1.0;
 			return scale;

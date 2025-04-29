@@ -54,6 +54,11 @@ public class Protein
 		return sequence.aminoacids();
 	}
 
+	public long sequenceSignature()
+	{
+		return sequence.signature();
+	}
+
 	/**
 	 * Simulates rare, non-specific protein interactions (~0.1%), with optional self-interaction.
 	 * TODO: what type of interactions?

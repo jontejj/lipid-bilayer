@@ -30,93 +30,109 @@ import java.awt.event.MouseEvent;
 
 import org.dyn4j.geometry.Vector2;
 
-public final class MousePanningInputHandler extends AbstractMouseInputHandler implements InputHandler {
+@SuppressWarnings({"hiding", "unused"})
+public final class MousePanningInputHandler extends AbstractMouseInputHandler implements InputHandler
+{
 	private final Object lock;
-	
+
 	private boolean panning;
 	private Point start;
-	
+
 	private double x;
 	private double y;
-	
-	public MousePanningInputHandler(Component component) {
+
+	public MousePanningInputHandler(Component component)
+	{
 		super(component, MouseEvent.BUTTON1);
 		this.panning = false;
 		this.lock = new Object();
 	}
 
 	@Override
-	protected void onMousePressed(Point point) {
+	protected void onMousePressed(Point point)
+	{
 		super.onMousePressed(point);
 		this.handleMouseStart(point);
 	}
 
 	@Override
-	protected void onMouseDrag(Point start, Point current) {
+	protected void onMouseDrag(Point start, Point current)
+	{
 		super.onMouseDrag(start, current);
 		this.handleMouseDrag(current);
 	}
-	
+
 	@Override
-	protected void onMouseRelease() {
+	protected void onMouseRelease()
+	{
 		this.clearPanningState();
 		super.onMouseRelease();
 	}
 
 	@Override
-	public void setEnabled(boolean flag) {
+	public void setEnabled(boolean flag)
+	{
 		super.setEnabled(flag);
-		if (!flag) {
+		if(!flag)
+		{
 			this.clearPanningState();
 		}
 	}
-	
+
 	@Override
-	public boolean isActive() {
+	public boolean isActive()
+	{
 		return this.panning;
 	}
 
 	@Override
-	public void uninstall() {
+	public void uninstall()
+	{
 		super.uninstall();
 		this.clearPanningState();
 	}
-	
-	private boolean handleMouseStart(Point start) {
-    	this.panning = true;
-    	this.start = start;
+
+	private boolean handleMouseStart(Point start)
+	{
+		this.panning = true;
+		this.start = start;
 		return true;
 	}
-	
-	private boolean handleMouseDrag(Point current) {
-    	this.panning = true;
-    	
-    	double x = current.getX() - this.start.getX();
-    	double y = current.getY() - this.start.getY();
-    	
-    	// input from the mouse should be queued for processing
-    	// to avoid mid-render changes to the camera
-    	// input from AWT is coming in from the main thread of
-    	// AWT, but rendering is performed on a different thread
-    	// as such we should lock on the changes just to be sure
-    	// we don't lose information
-    	synchronized (this.lock) {
-        	this.x += x;
-        	this.y -= y;	
+
+	private boolean handleMouseDrag(Point current)
+	{
+		this.panning = true;
+
+		double x = current.getX() - this.start.getX();
+		double y = current.getY() - this.start.getY();
+
+		// input from the mouse should be queued for processing
+		// to avoid mid-render changes to the camera
+		// input from AWT is coming in from the main thread of
+		// AWT, but rendering is performed on a different thread
+		// as such we should lock on the changes just to be sure
+		// we don't lose information
+		synchronized(this.lock)
+		{
+			this.x += x;
+			this.y -= y;
 		}
-    	
-    	this.start = current;
-		
+
+		this.start = current;
+
 		return true;
 	}
-	
-	private void clearPanningState() {
+
+	private void clearPanningState()
+	{
 		this.panning = false;
 		this.start = null;
 	}
-	
-	public Vector2 getOffsetAndReset() {
-		synchronized (this.lock) {
+
+	public Vector2 getOffsetAndReset()
+	{
+		synchronized(this.lock)
+		{
 			Vector2 offset = new Vector2(this.x, this.y);
 			this.x = 0;
 			this.y = 0;

@@ -1,4 +1,4 @@
-/* Copyright 2018 jonatanjonsson
+/* Copyright 2025 jonatanjonsson
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,14 +12,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.assertions;
+package com.github.jontejj.cell.evolution;
 
-import com.github.jontejj.cell.physics.Vec2;
-
-public final class CustomAssertions
+public interface HasMouth
 {
-	public static Vec2Assertion assertThat(Vec2 actual)
-	{
-		return new Vec2Assertion(actual);
-	}
+	void eat(Eatable food);
 }

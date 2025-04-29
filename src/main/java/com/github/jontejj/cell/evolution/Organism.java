@@ -14,11 +14,43 @@
  */
 package com.github.jontejj.cell.evolution;
 
+import org.dyn4j.dynamics.BodyFixture;
+import org.dyn4j.geometry.Geometry;
+import org.dyn4j.geometry.MassType;
+import org.dyn4j.samples.framework.SimulationBody;
+
 import com.google.common.base.Optional;
 
-public interface Organism
+public abstract class Organism extends SimulationBody
 {
-	void timestep();
+	private double circleRadius;
+	private BodyFixture fixture;
 
-	Optional<Organism> binaryFission();
+	public Organism()
+	{
+		this(1.0);
+	}
+
+	public Organism(double circleRadius)
+	{
+		this.circleRadius = circleRadius;
+		fixture = addFixture(Geometry.createCircle(circleRadius)); // a circular cell body
+		setMass(MassType.NORMAL);
+	}
+
+	public abstract void timestep();
+
+	public abstract Optional<Organism> binaryFission();
+
+	public double circleRadius()
+	{
+		return circleRadius;
+	}
+
+	void adjustBodySize(double sizeToAdd)
+	{
+		// circleRadius = circleRadius + circleRadius * sizeToAdd;
+		removeFixture(fixture);
+		fixture = addFixture(Geometry.createCircle(circleRadius));
+	}
 }

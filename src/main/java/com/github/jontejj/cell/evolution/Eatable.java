@@ -1,4 +1,4 @@
-/* Copyright 2018 jonatanjonsson
+/* Copyright 2025 jonatanjonsson
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -12,10 +12,20 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.physics;
+package com.github.jontejj.cell.evolution;
 
-public class Object2D
+import org.dyn4j.samples.framework.SimulationBody;
+import org.dyn4j.world.World;
+
+public interface Eatable
 {
-	int x, y;
+	/**
+	 * @return How much the food gives to the worm
+	 */
+	int getCalories();
 
+	/**
+	 * Food reaction (e.g., disappear after eaten)
+	 */
+	void onEaten(World<SimulationBody> world);
 }

@@ -14,33 +14,35 @@
  */
 package com.github.jontejj.cell.evolution.proteins;
 
+import com.github.jontejj.cell.evolution.AminoAcid;
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
-import com.github.jontejj.cell.evolution.Nucleobases;
 
-public class TransporterProtein extends FunctionalProtein
+public class AminoAcidSynthaseProtein extends FunctionalProtein
 {
-	private final Nucleobases baseToTransport;
+	private final AminoAcid aminoAcidToSynthase;
 
-	public TransporterProtein(AminoAcidSequence aminoAcidSequence)
+	public AminoAcidSynthaseProtein(AminoAcidSequence aminoAcidSequence)
 	{
 		super(aminoAcidSequence);
-		baseToTransport = Nucleobases.values()[(int) (Math.abs(sequenceSignature()) % 5)];
+		aminoAcidToSynthase = aminoAcids().get(2);
 	}
 
 	@Override
 	public void performFunction(Cytoplasm env)
 	{
+
+		// TODO: consume the actual nucleotides needed?
 		if(env.consumeEnergy(1))
 		{
-			// TODO: the amount should be taken from outside of the cell (not appear out of nothing)
-			env.increaseResourceAmount(baseToTransport, (long) (5.0 * molecularMass() / 1000.0)); // Bigger transporter moves more!
+			env.synthesizeAminoAcid(aminoAcidToSynthase);
 		}
 	}
 
 	@Override
 	public String toString()
 	{
-		return baseToTransport + " transporter";
+		return aminoAcidToSynthase + " SynthaseProtein";
 	}
+
 }

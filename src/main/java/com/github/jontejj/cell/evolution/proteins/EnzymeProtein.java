@@ -16,17 +16,32 @@ package com.github.jontejj.cell.evolution.proteins;
 
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
+import com.github.jontejj.cell.evolution.Nucleobases;
 
 public class EnzymeProtein extends FunctionalProtein
 {
+	public static long MINIMUM_SIZE = 30000;
+	private final Nucleobases baseToConsume;
+
 	public EnzymeProtein(AminoAcidSequence aminoAcidSequence)
 	{
 		super(aminoAcidSequence);
+		baseToConsume = Nucleobases.values()[(int) (Math.abs(sequenceSignature()) % 5)];
 	}
 
 	@Override
 	public void performFunction(Cytoplasm env)
 	{
-		env.convertResourceToEnergy(4.0 * molecularMass() / 1000.0); // More mass = more catalysis
+		if(env.decreaseResourceAmount(baseToConsume, (long) (MINIMUM_SIZE / molecularMass()))) // Bigger enzymes consume less resources!
+		{
+			env.addEnergy((long) (4.0 * molecularMass() / 1000.0)); // And adds more energy
+		}
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Enzyme that consumes " + (long) (MINIMUM_SIZE / molecularMass()) + " of " + baseToConsume + " and gives "
+				+ (long) (4.0 * molecularMass() / 1000.0) + " atp";
 	}
 }

@@ -27,80 +27,96 @@ package org.dyn4j.samples.framework.input;
 import java.awt.Component;
 import java.awt.Point;
 
-public final class BooleanStateMouseInputHandler extends AbstractMouseInputHandler {
+public final class BooleanStateMouseInputHandler extends AbstractMouseInputHandler
+{
 	private final Object lock;
-	
+
 	private boolean active;
 	private Point location;
 	private boolean hasBeenHandled;
-	
-	public BooleanStateMouseInputHandler(Component component, int button) {
+
+	public BooleanStateMouseInputHandler(Component component, int button)
+	{
 		super(component, button);
 		this.lock = new Object();
 	}
 
+	@SuppressWarnings("hiding")
 	@Override
-	protected void onMousePressed(Point point) {
+	protected void onMousePressed(Point point)
+	{
 		super.onMousePressed(point);
-		synchronized (this.lock) {
+		synchronized(this.lock)
+		{
 			boolean active = this.active;
-			
+
 			this.active = true;
 			this.location = point;
 
 			// if the state transitioned from inactive to active
 			// flag that it needs to be handled
-			if (!active) {
+			if(!active)
+			{
 				this.hasBeenHandled = false;
 			}
 		}
 	}
 
 	@Override
-	protected void onMouseRelease() {
+	protected void onMouseRelease()
+	{
 		this.active = false;
 		super.onMouseRelease();
 	}
 
 	@Override
-	public void setEnabled(boolean flag) {
+	public void setEnabled(boolean flag)
+	{
 		super.setEnabled(flag);
-		if (!flag) {
+		if(!flag)
+		{
 			this.clearState();
 		}
 	}
-	
+
 	@Override
-	public void uninstall() {
+	public void uninstall()
+	{
 		super.uninstall();
 		this.clearState();
 	}
-	
-	private void clearState() {
+
+	private void clearState()
+	{
 		this.active = false;
 		this.location = null;
 		this.hasBeenHandled = false;
 	}
-	
-	public Point getMouseLocation() {
-		synchronized (this.lock) {
+
+	public Point getMouseLocation()
+	{
+		synchronized(this.lock)
+		{
 			return this.location;
 		}
 	}
 
 	@Override
-	public boolean isActive() {
+	public boolean isActive()
+	{
 		return this.active;
 	}
-	
-	public boolean isActiveButNotHandled() {
-		if (this.hasBeenHandled)
+
+	public boolean isActiveButNotHandled()
+	{
+		if(this.hasBeenHandled)
 			return false;
-		
+
 		return this.active;
 	}
-	
-	public void setHasBeenHandled(boolean hasBeenHandled) {
+
+	public void setHasBeenHandled(boolean hasBeenHandled)
+	{
 		this.hasBeenHandled = hasBeenHandled;
 	}
 }

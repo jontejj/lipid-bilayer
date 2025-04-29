@@ -14,7 +14,9 @@
  */
 package com.github.jontejj.cell.evolution;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.assertj.core.util.Lists;
@@ -42,6 +44,8 @@ public class DNA
 
 	private final int position;
 
+	private Map<Nucleobases, Integer> nucleotideCounts;
+
 	/**
 	 * @param nucleotides the nucleotides that this DNA represents
 	 * @param position where in the Genome the DNA is located
@@ -52,6 +56,11 @@ public class DNA
 		this.position = position;
 		this.molecularMass = nucleotides.stream().mapToDouble(Nucleobases::molecularMass).sum();
 		setEuchromatinModeForHouseKeepingGenes();
+		nucleotideCounts = new EnumMap<>(Nucleobases.class);
+		for(int i = 0; i < nucleotides.size(); i++)
+		{
+			nucleotideCounts.merge(nucleotides.get(i), 1, Integer::sum);
+		}
 	}
 
 	private void setEuchromatinModeForHouseKeepingGenes()
@@ -92,6 +101,11 @@ public class DNA
 		return molecularMass;
 	}
 
+	public Map<Nucleobases, Integer> nucleotideCounts()
+	{
+		return nucleotideCounts;
+	}
+
 	/**
 	 * DNA -> (transcription) pre-mRNA -> mRNA -> tRNA (adapter) -> (translation) Ribosome translates mRNA into polypeptide
 	 * DNA nucleobasepairs:
@@ -100,20 +114,40 @@ public class DNA
 	 * G-C
 	 * C-G
 	 */
-	public Optional<mRNA> transcribe()
+	public Optional<mRNA> transcribe(Cytoplasm cytoplasm)
 	{
 		if(chromatinMode == ChromatinMode.HETEROCHROMATIN)
 			return Optional.absent();
+
+		// Check if all are available
+		for(Map.Entry<Nucleobases, Integer> entry : nucleotideCounts.entrySet())
+		{
+			if(cytoplasm.nucleotideResources().getOrDefault(entry.getKey(), 0L) < entry.getValue())
+				return Optional.absent();
+		}
+
+		// Consume the nucleotides
+		for(Map.Entry<Nucleobases, Integer> entry : nucleotideCounts.entrySet())
+		{
+			if(!cytoplasm.decreaseResourceAmount(entry.getKey(), entry.getValue()))
+				return Optional.absent(); // Failsafe
+		}
+
 		List<Codon> codons = Lists.newArrayList();
-		for(int i = 0; i < nucleotides.size(); i += 3)
+		for(int i = 0; i < nucleotides.size() - 2; i += 3)
 		{
 			codons.add(Codon.getOrInitialize(nucleotides.get(i).toRNA(), nucleotides.get(i + 1).toRNA(), nucleotides.get(i + 2).toRNA()));
 		}
 		return Optional.of(new mRNA(codons, this));
 	}
 
-	public DNA replicate()
+	public DNA replicate(Cytoplasm cytoplasm)
 	{
+		for(Map.Entry<Nucleobases, Integer> entry : nucleotideCounts.entrySet())
+		{
+			if(!cytoplasm.decreaseResourceAmount(entry.getKey(), entry.getValue()))
+				throw new IllegalStateException("Not enough resources to replicate: " + nucleotideCounts + "in " + cytoplasm);
+		}
 		// TODO: make this more realistic
 		List<Nucleobases> newNucleotides = Lists.newArrayList();
 		for(Nucleobases base : nucleotides)

@@ -17,23 +17,32 @@ package com.github.jontejj.cell.evolution.proteins;
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.DNA;
+import com.github.jontejj.cell.evolution.Nucleobases;
 
 public class RegulatoryProtein extends FunctionalProtein
 {
-	private DNA sourceDNA;
+	private final DNA sourceDNA;
+	private final Nucleobases baseToMonitor;
 
 	public RegulatoryProtein(AminoAcidSequence aminoAcidSequence, DNA sourceDNA)
 	{
 		super(aminoAcidSequence);
 		this.sourceDNA = sourceDNA;
+		baseToMonitor = Nucleobases.values()[(int) (Math.abs(sequenceSignature()) % 5)];
 	}
 
 	@Override
 	public void performFunction(Cytoplasm env)
 	{
-		if(env.getResourceLevel() < 50)
+		if(env.nucleotideResources().get(baseToMonitor) < 100)
 		{
 			env.activateBackupGenes(sourceDNA.position());
 		}
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Regulatory protein that monitors for low levels of " + baseToMonitor;
 	}
 }

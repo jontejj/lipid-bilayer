@@ -39,20 +39,23 @@ import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.world.World;
 import org.dyn4j.world.result.DetectResult;
 
-public class MousePickingInputHandler extends AbstractMouseInputHandler implements InputHandler {
+@SuppressWarnings({"hiding", "unused"})
+public class MousePickingInputHandler extends AbstractMouseInputHandler implements InputHandler
+{
 	private final Object lock;
 	private final Camera camera;
 	private final World<SimulationBody> world;
-	
+
 	// state maintained by the main thread
 	private boolean dragging;
 	private Vector2 point;
 	private SimulationBody body;
-	
+
 	// state maintained by the render thread
 	private Joint<SimulationBody> mouseHandle;
-	
-	public MousePickingInputHandler(Component component, Camera camera, World<SimulationBody> world) {
+
+	public MousePickingInputHandler(Component component, Camera camera, World<SimulationBody> world)
+	{
 		super(component, MouseEvent.BUTTON1);
 		this.lock = new Object();
 		this.camera = camera;
@@ -60,104 +63,122 @@ public class MousePickingInputHandler extends AbstractMouseInputHandler implemen
 	}
 
 	@Override
-	protected void onMousePressed(Point point) {
+	protected void onMousePressed(Point point)
+	{
 		super.onMousePressed(point);
 		this.handleMouseStartOrDrag(point);
 	}
 
 	@Override
-	protected void onMouseDrag(Point start, Point current) {
+	protected void onMouseDrag(Point start, Point current)
+	{
 		super.onMouseDrag(start, current);
 		this.handleMouseStartOrDrag(current);
 	}
-	
+
 	@Override
-	protected void onMouseRelease() {
+	protected void onMouseRelease()
+	{
 		this.onReleaseCleanUp();
 		super.onMouseRelease();
 	}
 
 	@Override
-	public void setEnabled(boolean flag) {
+	public void setEnabled(boolean flag)
+	{
 		super.setEnabled(flag);
-		if (!flag) {
+		if(!flag)
+		{
 			this.onReleaseCleanUp();
 		}
 	}
-	
+
 	@Override
-	public boolean isActive() {
+	public boolean isActive()
+	{
 		return this.dragging;
 	}
 
 	@Override
-	public void uninstall() {
+	public void uninstall()
+	{
 		super.uninstall();
 		this.onReleaseCleanUp();
 	}
-	
-	private boolean handleMouseStartOrDrag(Point point) {
+
+	private boolean handleMouseStartOrDrag(Point point)
+	{
 		Vector2 p = this.camera.toWorldCoordinates(this.component.getWidth(), this.component.getHeight(), point);
-		
-		synchronized (this.lock) {
+
+		synchronized(this.lock)
+		{
 			this.point = p;
-			
-			if (!this.dragging) {
+
+			if(!this.dragging)
+			{
 				SimulationBody body = this.getBodyAt(p);
-				if (body != null) {
+				if(body != null)
+				{
 					this.dragging = true;
 					this.body = body;
 					return true;
 				}
-			} else {
-				return true;
 			}
+			else
+				return true;
 		}
-		
+
 		return false;
 	}
-	
-	private void onReleaseCleanUp() {
-		synchronized (this.lock) {
+
+	private void onReleaseCleanUp()
+	{
+		synchronized(this.lock)
+		{
 			this.point = null;
 			this.body = null;
 			this.dragging = false;
 		}
 	}
-	
-	public SimulationBody getBody() {
-		if (this.mouseHandle != null) {
+
+	public SimulationBody getBody()
+	{
+		if(this.mouseHandle != null)
 			return this.mouseHandle.getBody(0);
-		}
 		return null;
 	}
-	
-	private SimulationBody getBodyAt(Vector2 p) {
+
+	private SimulationBody getBodyAt(Vector2 p)
+	{
 		SimulationBody body = null;
-		
+
 		// detect bodies under the mouse pointer
 		AABB aabb = new AABB(new Vector2(p.x, p.y), 0.0001);
 		Iterator<DetectResult<SimulationBody, BodyFixture>> it = this.world.detectIterator(aabb, null);
-		while (it.hasNext()) {
+		while(it.hasNext())
+		{
 			SimulationBody b = it.next().getBody();
-			
+
 			// ignore infinite bodies
-			if (b.getMass().isInfinite()) {
+			if(b.getMass().isInfinite())
+			{
 				continue;
 			}
-			
+
 			// check point contains and take the first
 			// one found
-			if (b.contains(p)) {
+			if(b.contains(p))
+			{
 				body = b;
 				break;
 			}
 		}
-		
+
 		return body;
 	}
-	
-	private Joint<SimulationBody> createControlJoint(SimulationBody body, Vector2 p) {
+
+	private Joint<SimulationBody> createControlJoint(SimulationBody body, Vector2 p)
+	{
 		PinJoint<SimulationBody> pj = new PinJoint<SimulationBody>(body, new Vector2(p.x, p.y));
 		pj.setSpringEnabled(true);
 		pj.setSpringFrequency(4.0);
@@ -167,20 +188,23 @@ public class MousePickingInputHandler extends AbstractMouseInputHandler implemen
 		pj.setMaximumSpringForce(500);
 		return pj;
 	}
-	
-	public void updateMousePickingState() {
+
+	public void updateMousePickingState()
+	{
 		boolean dragging = false;
 		Vector2 point = null;
 		SimulationBody body = null;
-		
-		synchronized (this.lock) {
+
+		synchronized(this.lock)
+		{
 			dragging = this.dragging;
 			point = this.point;
 			body = this.body;
 		}
-		
+
 		// 1. mouse picking begins
-		if (dragging && this.mouseHandle == null && point != null) {
+		if(dragging && this.mouseHandle == null && point != null)
+		{
 			// create a joint with the body
 			Joint<SimulationBody> joint = this.createControlJoint(body, point);
 			this.mouseHandle = joint;
@@ -188,20 +212,24 @@ public class MousePickingInputHandler extends AbstractMouseInputHandler implemen
 			this.onPickingStart(body);
 			return;
 		}
-		
+
 		// 2. mouse picking continues
-		if (dragging && this.mouseHandle != null && point != null) {
+		if(dragging && this.mouseHandle != null && point != null)
+		{
 			Joint<SimulationBody> joint = this.mouseHandle;
-			if (joint instanceof PinJoint) {
-				PinJoint<?> pj = (PinJoint<?>)joint;
+			if(joint instanceof PinJoint)
+			{
+				PinJoint<?> pj = (PinJoint<?>) joint;
 				pj.setTarget(new Vector2(point.x, point.y));
 			}
 			return;
 		}
-		
+
 		// 3. mouse picking ends
-		if (!dragging) {
-			if (this.mouseHandle != null) {
+		if(!dragging)
+		{
+			if(this.mouseHandle != null)
+			{
 				this.world.removeJoint(this.mouseHandle);
 				this.onPickingEnd(body);
 			}
@@ -209,12 +237,14 @@ public class MousePickingInputHandler extends AbstractMouseInputHandler implemen
 			return;
 		}
 	}
-	
-	public void onPickingStart(SimulationBody body) {
-		
+
+	public void onPickingStart(SimulationBody body)
+	{
+
 	}
-	
-	public void onPickingEnd(SimulationBody body) {
-		
+
+	public void onPickingEnd(SimulationBody body)
+	{
+
 	}
 }
