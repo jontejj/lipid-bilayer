@@ -205,6 +205,11 @@ public class MousePickingInputHandler extends AbstractMouseInputHandler implemen
 		// 1. mouse picking begins
 		if(dragging && this.mouseHandle == null && point != null)
 		{
+			if(!this.world.containsBody(body))
+			{
+				System.err.println("Skipping mouse joint creation: body not in world");
+				return;
+			}
 			// create a joint with the body
 			Joint<SimulationBody> joint = this.createControlJoint(body, point);
 			this.mouseHandle = joint;

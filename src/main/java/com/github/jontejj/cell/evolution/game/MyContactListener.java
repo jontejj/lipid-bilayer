@@ -38,15 +38,15 @@ public class MyContactListener extends ContactListenerAdapter<SimulationBody>
 		SimulationBody body1 = collision.getBody1();
 		SimulationBody body2 = collision.getBody2();
 
-		System.out.println("Collision detected between: " + body1 + " and " + body2);
-
 		if(body1 instanceof HasMouth && body2 instanceof Eatable)
 		{
+			System.out.println("Collision detected between: " + body1 + " and " + body2);
 			((HasMouth) body1).eat((Eatable) body2);
 			((Eatable) body2).onEaten(world);
 		}
 		else if(body2 instanceof HasMouth && body1 instanceof Eatable)
 		{
+			System.out.println("Collision detected between: " + body2 + " and " + body1);
 			((HasMouth) body2).eat((Eatable) body1);
 			((Eatable) body1).onEaten(world);
 		}

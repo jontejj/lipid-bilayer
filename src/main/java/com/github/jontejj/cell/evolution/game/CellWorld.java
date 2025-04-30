@@ -24,15 +24,26 @@
  */
 package com.github.jontejj.cell.evolution.game;
 
+import static java.util.concurrent.TimeUnit.DAYS;
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.util.Sets;
 import org.dyn4j.geometry.Circle;
@@ -42,6 +53,7 @@ import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.samples.framework.Camera;
 import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.samples.framework.SimulationFrame;
+import org.dyn4j.samples.framework.input.ToggleStateKeyboardInputHandler;
 import org.dyn4j.world.PhysicsWorld;
 
 import com.github.jontejj.cell.evolution.Genome;
@@ -60,10 +72,17 @@ public class CellWorld extends SimulationFrame
 	private static final long serialVersionUID = 5663760293144882635L;
 	private Set<Organism> organisms;
 	private final List<SimulationBody> bodiesToRemove = new ArrayList<>();
+	private Duration durationOfLastTimestep;
+	private ToggleStateKeyboardInputHandler printStats;
 
 	public CellWorld()
 	{
 		super("Cell World");
+
+		this.printStats = new ToggleStateKeyboardInputHandler(this.canvas, KeyEvent.VK_NUMPAD3, KeyEvent.VK_3);
+		printStats.install();
+		this.printControls();
+		printControl("Print Stats", "3", "Use the 3 key to print the stats");
 		organisms = createOrganisms();
 	}
 
@@ -123,7 +142,12 @@ public class CellWorld extends SimulationFrame
 		DeadCell deadCell = new DeadCell(organism.cytoplasm().totalMolecularMass());
 		deadCell.addFixture(shape);
 		deadCell.setMass(MassType.NORMAL);
-		deadCell.translate(-1.0, 2.0);
+		// Set dead cell position to organism's position
+		deadCell.translate(organism.getTransform().getTranslationX(), organism.getTransform().getTranslationY());
+		deadCell.setLinearVelocity(organism.getLinearVelocity());
+		deadCell.setAngularVelocity(organism.getAngularVelocity());
+		deadCell.setLinearDamping(5.0); // Higher = slows faster
+		deadCell.setAngularDamping(5.0);
 		this.world.addBody(deadCell);
 	}
 
@@ -154,10 +178,7 @@ public class CellWorld extends SimulationFrame
 		{
 			Stopwatch stopwatch = Stopwatch.createStarted();
 			boolean organismShouldDie = organism.timestep();
-			System.out.println("Time to execute timestep: " + stopwatch);
-			System.out.println("Stats: " + Stats.asString());
-			System.out.println("Cell " + organism);
-
+			durationOfLastTimestep = stopwatch.elapsed();
 			if(organismShouldDie)
 			{
 				world.removeBody(organism);
@@ -169,7 +190,6 @@ public class CellWorld extends SimulationFrame
 			if(binaryFissionResult.isPresent())
 			{
 				System.out.println("Time to execute fission: " + stopwatch);
-				// TODO: nothing appears in the UI after fission?
 			}
 			newOrganisms.addAll(binaryFissionResult.asSet());
 		}
@@ -208,6 +228,12 @@ public class CellWorld extends SimulationFrame
 		g.setColor(Color.BLACK);
 		g.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		// String.format("Power: %1$.2f", 50.5)
+		if(durationOfLastTimestep != null)
+		{
+			TimeUnit unit = chooseUnit(durationOfLastTimestep.toNanos());
+			long convertedTime = unit.convert(durationOfLastTimestep);
+			g.drawString("Time/step: " + convertedTime + " " + unit, 20, 50);
+		}
 		int y = 70;
 		for(Organism org : organisms)
 		{
@@ -225,11 +251,33 @@ public class CellWorld extends SimulationFrame
 		g.setTransform(tx);
 	}
 
+	private static TimeUnit chooseUnit(long nanos)
+	{
+		if(DAYS.convert(nanos, NANOSECONDS) > 0)
+			return DAYS;
+		if(HOURS.convert(nanos, NANOSECONDS) > 0)
+			return HOURS;
+		if(MINUTES.convert(nanos, NANOSECONDS) > 0)
+			return MINUTES;
+		if(SECONDS.convert(nanos, NANOSECONDS) > 0)
+			return SECONDS;
+		if(MILLISECONDS.convert(nanos, NANOSECONDS) > 0)
+			return MILLISECONDS;
+		if(MICROSECONDS.convert(nanos, NANOSECONDS) > 0)
+			return MICROSECONDS;
+		return NANOSECONDS;
+	}
+
 	@Override
 	protected void handleEvents()
 	{
 		oneTimestep();
 		super.handleEvents();
+		if(this.printStats.isActive())
+		{
+			this.printStats.setActive(false);
+			System.out.println("Stats: " + Stats.asString());
+		}
 	}
 
 	public void deferRemoval(SimulationBody body)

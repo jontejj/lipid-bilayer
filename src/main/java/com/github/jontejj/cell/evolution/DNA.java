@@ -14,6 +14,7 @@
  */
 package com.github.jontejj.cell.evolution;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -49,18 +50,31 @@ public class DNA
 	/**
 	 * @param nucleotides the nucleotides that this DNA represents
 	 * @param position where in the Genome the DNA is located
+	 * @param nucleotideCounts counts for how many of each nucleotide occurs in the nucleotides parameter
 	 */
-	public DNA(List<Nucleobases> nucleotides, int position)
+	public DNA(List<Nucleobases> nucleotides, int position, Map<Nucleobases, Integer> nucleotideCounts)
 	{
 		this.nucleotides = nucleotides;
 		this.position = position;
 		this.molecularMass = nucleotides.stream().mapToDouble(Nucleobases::molecularMass).sum();
 		setEuchromatinModeForHouseKeepingGenes();
-		nucleotideCounts = new EnumMap<>(Nucleobases.class);
+		this.nucleotideCounts = nucleotideCounts;
+	}
+
+	public DNA(List<Nucleobases> nucleotides, int position)
+	{
+		this(nucleotides, position, calculateNucleotideCounts(nucleotides));
+
+	}
+
+	private static Map<Nucleobases, Integer> calculateNucleotideCounts(List<Nucleobases> nucleotides)
+	{
+		Map<Nucleobases, Integer> nucleotideCounts = new EnumMap<>(Nucleobases.class);
 		for(int i = 0; i < nucleotides.size(); i++)
 		{
 			nucleotideCounts.merge(nucleotides.get(i), 1, Integer::sum);
 		}
+		return nucleotideCounts;
 	}
 
 	private void setEuchromatinModeForHouseKeepingGenes()
@@ -149,34 +163,74 @@ public class DNA
 				throw new IllegalStateException("Not enough resources to replicate: " + nucleotideCounts + "in " + cytoplasm);
 		}
 		// TODO: make this more realistic
-		List<Nucleobases> newNucleotides = Lists.newArrayList();
-		for(Nucleobases base : nucleotides)
+		final int dnaSize = nucleotides.size();
+
+		// Very rough expected probabilities
+		final double mutationChancePerBase = 1.0 / 100_000;
+		final double mutationThreshold = dnaSize * mutationChancePerBase;
+
+		// Only attempt to mutate if we roll under the expected threshold
+		boolean attemptMutation = RND.nextDouble() < mutationThreshold;
+
+		if(!attemptMutation)
 		{
+			// Fast path, no mutation
+			DNA dna = new DNA(nucleotides, position, nucleotideCounts);
+			dna.chromatinMode = this.chromatinMode;
+			return dna;
+		}
+
+		List<Nucleobases> newNucleotides = null;
+		for(int i = 0; i < nucleotides.size(); i++)
+		{
+			Nucleobases base = nucleotides.get(i);
 			// TODO: only make a Lists.newArrayList(); if there are mutations, this will minimize the required memory by a lot
-			if(RND.nextInt(100000) == 1)
+			if(RND.nextInt(100_000) == 1)
 			{
 				// Mutation
+				if(newNucleotides == null)
+				{
+					newNucleotides = new ArrayList<>(nucleotides.subList(0, i));
+				}
 				ImmutableList<Nucleobases> otherBases = base.othersDna();
 				Nucleobases mutation = otherBases.get(RND.nextInt(otherBases.size()));
 				newNucleotides.add(mutation);
+				Stats.pointMutations++;
 				continue;
 			}
-			if(RND.nextInt(1000000) == 2)
+			if(RND.nextInt(1_000_000) == 2)
 			{
 				// Addition
+				if(newNucleotides == null)
+				{
+					newNucleotides = new ArrayList<>(nucleotides.subList(0, i));
+				}
 				newNucleotides.add(base);
 				Nucleobases addition = Nucleobases.values()[(RND.nextInt(Nucleobases.values().length))];
 				newNucleotides.add(addition);
+				Stats.additionMutations++;
 				continue;
 			}
-			if(RND.nextInt(1000000) == 3)
+			if(RND.nextInt(1_000_000) == 3)
 			{
 				// Deletion
+				if(newNucleotides == null)
+				{
+					newNucleotides = new ArrayList<>(nucleotides.subList(0, i));
+				}
+				Stats.deletionMutations++;
 				continue;
 			}
-			newNucleotides.add(base);
 		}
-		DNA dna = new DNA(newNucleotides, position);
+		DNA dna;
+		if(newNucleotides != null)
+		{
+			dna = new DNA(newNucleotides, position);
+		}
+		else
+		{
+			dna = new DNA(nucleotides, dnaSize, nucleotideCounts);
+		}
 		dna.chromatinMode = this.chromatinMode;
 		return dna;
 	}

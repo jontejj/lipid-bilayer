@@ -160,6 +160,7 @@ public abstract class SimulationFrame extends JFrame
 		});
 
 		// create the size of the window
+		// Dimension size = new Dimension(3840, 2160);
 		Dimension size = new Dimension(800, 600);
 
 		// create a canvas to paint to
@@ -235,8 +236,6 @@ public abstract class SimulationFrame extends JFrame
 
 		this.printSimulation.install();
 		this.printStepNumber.install();
-
-		this.printControls();
 	}
 
 	protected void printControl(String name, String input, String message)

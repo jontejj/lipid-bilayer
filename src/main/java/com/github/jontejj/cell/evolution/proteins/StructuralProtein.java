@@ -79,7 +79,7 @@ public class StructuralProtein extends FunctionalProtein
 				env.world().addBody(segment);
 
 				// If there is a previous segment, create a joint!
-				if(lastSegment != null)
+				if(lastSegment != null && env.world().containsBody(lastSegment)) // && !env.shouldTriggerApoptosis()
 				{
 					DistanceJoint<SimulationBody> joint = new DistanceJoint<>(lastSegment,
 							segment,

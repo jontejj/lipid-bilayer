@@ -191,7 +191,7 @@ public class Cytoplasm
 	public String toString()
 	{
 		return "Cytoplasm [nucleotideEesources=" + nucleotides + ", aminoAcids=" + aminoAcids + ", atp=" + atp + ", proteins in cell: "
-				+ proteinsInCytoplasm.size() + ", nucleus=" + nucleus + "]";
+				+ proteinsInCytoplasm.size() + ", nucleus=" + nucleus + ", apoptosisWarningCounter=" + apoptosisWarningCounter + "]";
 	}
 
 	public World<SimulationBody> world()
