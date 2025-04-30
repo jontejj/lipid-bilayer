@@ -36,8 +36,6 @@ public class DNA
 		HETEROCHROMATIN
 	}
 
-	private static Random RND = new Random(42);
-
 	private List<Nucleobases> nucleotides;
 	private final double molecularMass;
 
@@ -52,18 +50,20 @@ public class DNA
 	 * @param position where in the Genome the DNA is located
 	 * @param nucleotideCounts counts for how many of each nucleotide occurs in the nucleotides parameter
 	 */
-	public DNA(List<Nucleobases> nucleotides, int position, Map<Nucleobases, Integer> nucleotideCounts)
+	public DNA(List<Nucleobases> nucleotides, int position, Map<Nucleobases, Integer> nucleotideCounts, double molecularMass)
 	{
+		if(nucleotides.isEmpty())
+			throw new IllegalStateException("a DNA of length zero is not allowed");
 		this.nucleotides = nucleotides;
 		this.position = position;
-		this.molecularMass = nucleotides.stream().mapToDouble(Nucleobases::molecularMass).sum();
+		this.molecularMass = molecularMass;
 		setEuchromatinModeForHouseKeepingGenes();
 		this.nucleotideCounts = nucleotideCounts;
 	}
 
 	public DNA(List<Nucleobases> nucleotides, int position)
 	{
-		this(nucleotides, position, calculateNucleotideCounts(nucleotides));
+		this(nucleotides, position, calculateNucleotideCounts(nucleotides), calculatemolecularMass(nucleotides));
 
 	}
 
@@ -75,6 +75,11 @@ public class DNA
 			nucleotideCounts.merge(nucleotides.get(i), 1, Integer::sum);
 		}
 		return nucleotideCounts;
+	}
+
+	private static double calculatemolecularMass(List<Nucleobases> nucleotides)
+	{
+		return nucleotides.stream().mapToDouble(Nucleobases::molecularMass).sum();
 	}
 
 	private void setEuchromatinModeForHouseKeepingGenes()
@@ -155,7 +160,13 @@ public class DNA
 		return Optional.of(new mRNA(codons, this));
 	}
 
-	public DNA replicate(Cytoplasm cytoplasm)
+	private static Random RND = new Random(42);
+
+	/**
+	 * @param cytoplasm the cytoplasm where the DNA is replicated
+	 * @return the new DNA if the length is not zero, otherwise absent
+	 */
+	public Optional<DNA> replicate(Cytoplasm cytoplasm)
 	{
 		for(Map.Entry<Nucleobases, Integer> entry : nucleotideCounts.entrySet())
 		{
@@ -175,16 +186,15 @@ public class DNA
 		if(!attemptMutation)
 		{
 			// Fast path, no mutation
-			DNA dna = new DNA(nucleotides, position, nucleotideCounts);
+			DNA dna = new DNA(nucleotides, position, nucleotideCounts, molecularMass);
 			dna.chromatinMode = this.chromatinMode;
-			return dna;
+			return Optional.of(dna);
 		}
 
 		List<Nucleobases> newNucleotides = null;
 		for(int i = 0; i < nucleotides.size(); i++)
 		{
 			Nucleobases base = nucleotides.get(i);
-			// TODO: only make a Lists.newArrayList(); if there are mutations, this will minimize the required memory by a lot
 			if(RND.nextInt(100_000) == 1)
 			{
 				// Mutation
@@ -229,10 +239,10 @@ public class DNA
 		}
 		else
 		{
-			dna = new DNA(nucleotides, dnaSize, nucleotideCounts);
+			dna = new DNA(nucleotides, dnaSize, nucleotideCounts, molecularMass);
 		}
 		dna.chromatinMode = this.chromatinMode;
-		return dna;
+		return Optional.of(dna);
 	}
 
 	public int position()

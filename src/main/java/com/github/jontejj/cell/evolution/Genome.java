@@ -24,6 +24,7 @@ import org.assertj.core.util.Lists;
 
 import com.github.jontejj.cell.evolution.DNA.ChromatinMode;
 import com.github.jontejj.cell.evolution.proteins.Protein;
+import com.google.common.base.Optional;
 
 public class Genome
 {
@@ -65,7 +66,8 @@ public class Genome
 	public Genome replicate(Cytoplasm cytoplasm)
 	{
 		// TODO: use dnas.parallelStream() and make decreaseResourceAmount in Cytoplasm thread-safe?
-		List<DNA> replicatedDnas = dnas.stream().map(dna -> dna.replicate(cytoplasm)).collect(Collectors.toList());
+		List<DNA> replicatedDnas = dnas.stream().map(dna -> dna.replicate(cytoplasm)).filter(Optional::isPresent).map(Optional::get)
+				.collect(Collectors.toList());
 		return new Genome(replicatedDnas);
 	}
 

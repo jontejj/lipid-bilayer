@@ -73,6 +73,7 @@ public class CellWorld extends SimulationFrame
 	private Set<Organism> organisms;
 	private final List<SimulationBody> bodiesToRemove = new ArrayList<>();
 	private Duration durationOfLastTimestep;
+	private Duration durationOfFission;
 	private ToggleStateKeyboardInputHandler printStats;
 
 	public CellWorld()
@@ -174,17 +175,23 @@ public class CellWorld extends SimulationFrame
 	{
 		Set<Organism> newOrganisms = Sets.newHashSet();
 		Set<Organism> deadOrganisms = Sets.newHashSet();
+		Stopwatch stopwatch = Stopwatch.createStarted();
 		for(Organism organism : organisms)
 		{
-			Stopwatch stopwatch = Stopwatch.createStarted();
 			boolean organismShouldDie = organism.timestep();
-			durationOfLastTimestep = stopwatch.elapsed();
 			if(organismShouldDie)
 			{
 				world.removeBody(organism);
 				addDeadCellForOrganism(organism);
 				deadOrganisms.add(organism);
 			}
+
+		}
+		durationOfLastTimestep = stopwatch.elapsed();
+
+		stopwatch = Stopwatch.createStarted();
+		for(Organism organism : organisms)
+		{
 			stopwatch = Stopwatch.createStarted();
 			Optional<Organism> binaryFissionResult = organism.binaryFission();
 			if(binaryFissionResult.isPresent())
@@ -193,6 +200,11 @@ public class CellWorld extends SimulationFrame
 			}
 			newOrganisms.addAll(binaryFissionResult.asSet());
 		}
+		if(!newOrganisms.isEmpty())
+		{
+			durationOfFission = stopwatch.elapsed();
+		}
+
 		organisms.addAll(newOrganisms);
 		organisms.removeAll(deadOrganisms);
 		if(organisms.isEmpty())
@@ -232,9 +244,16 @@ public class CellWorld extends SimulationFrame
 		{
 			TimeUnit unit = chooseUnit(durationOfLastTimestep.toNanos());
 			long convertedTime = unit.convert(durationOfLastTimestep);
-			g.drawString("Time/step: " + convertedTime + " " + unit, 20, 50);
+			g.drawString("Time/step: " + convertedTime + " " + unit, 20, 30);
 		}
-		int y = 70;
+		if(durationOfFission != null)
+		{
+			TimeUnit unit = chooseUnit(durationOfFission.toNanos());
+			long convertedTime = unit.convert(durationOfFission);
+			g.drawString("Fission time: " + convertedTime + " " + unit, 20, 50);
+		}
+		g.drawString("Organisms: " + organisms.size(), 20, 70);
+		int y = 90;
 		for(Organism org : organisms)
 		{
 			g.drawString("Name: " + ((UnicellularOrganism) org).name(), 20, y);
