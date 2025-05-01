@@ -20,11 +20,13 @@ import java.util.List;
 import org.assertj.core.util.Lists;
 
 import com.github.jontejj.cell.evolution.proteins.AminoAcidSynthaseProtein;
+import com.github.jontejj.cell.evolution.proteins.DnaA;
 import com.github.jontejj.cell.evolution.proteins.EnzymeProtein;
 import com.github.jontejj.cell.evolution.proteins.Protein;
 import com.github.jontejj.cell.evolution.proteins.RegulatoryProtein;
 import com.github.jontejj.cell.evolution.proteins.StructuralProtein;
 import com.github.jontejj.cell.evolution.proteins.TransporterProtein;
+import com.google.common.base.Optional;
 
 public class mRNA
 {
@@ -37,7 +39,7 @@ public class mRNA
 		this.sourceDNA = sourceDNA;
 	}
 
-	public Protein translate(Cytoplasm cytoplasm)
+	public Optional<Protein> translate(Cytoplasm cytoplasm)
 	{
 		// TODO: splicing?
 		// TODO: repression
@@ -65,6 +67,8 @@ public class mRNA
 				aminoacids.add(aa);
 			}
 		}
+		if(aminoacids.isEmpty())
+			return Optional.absent();
 		Stats.totalNumberOfAminoAcids = Stats.totalNumberOfAminoAcids.add(BigDecimal.valueOf(aminoacids.size()));
 		// TODO: how to fold the protein based on the amino acids?
 		double molecularMass = aminoacids.stream().mapToDouble(AminoAcid::molecularMass).sum();
@@ -77,7 +81,13 @@ public class mRNA
 		{
 			Stats.structuralProteinsCreated++;
 			// Leucine in the start was chosen completely by random
-			return new StructuralProtein(aminoAcidSequence);
+			return Optional.of(new StructuralProtein(aminoAcidSequence));
+		}
+		else if(aminoacids.size() > 5 && aminoacids.get(1) == AminoAcid.Serine && aminoacids.get(2) == AminoAcid.Leucine)
+		{
+			Stats.dnaReplicationProteinsCreated++;
+			// The first few amino acids that make up DnaA
+			return Optional.of(new DnaA(aminoAcidSequence));
 		}
 		else if(molecularMass > EnzymeProtein.MINIMUM_SIZE)
 		{
@@ -85,23 +95,23 @@ public class mRNA
 
 			// Alanine in the start was chosen completely by random
 			if(aminoacids.get(1) == AminoAcid.Alanine)
-				return new AminoAcidSynthaseProtein(aminoAcidSequence);
-			return new EnzymeProtein(aminoAcidSequence);
+				return Optional.of(new AminoAcidSynthaseProtein(aminoAcidSequence));
+			return Optional.of(new EnzymeProtein(aminoAcidSequence));
 		}
 		else if(aminoacids.contains(AminoAcid.Tryptophan) || aminoacids.contains(AminoAcid.Serine))
 		{
 			Stats.regulatoryProteinCreated++;
-			return new RegulatoryProtein(aminoAcidSequence, this.sourceDNA);
+			return Optional.of(new RegulatoryProtein(aminoAcidSequence, this.sourceDNA));
 		}
 		else if(aminoacids.size() > 50)
 		{
 			Stats.transporterProteinsCreated++;
-			return new TransporterProtein(aminoAcidSequence);
+			return Optional.of(new TransporterProtein(aminoAcidSequence));
 		}
 		else
 		{
 			Stats.genericProteinsCreated++;
-			return new Protein(aminoAcidSequence); // fallback, could be your original Protein
+			return Optional.of(new Protein(aminoAcidSequence)); // fallback, could be your original Protein
 		}
 	}
 }

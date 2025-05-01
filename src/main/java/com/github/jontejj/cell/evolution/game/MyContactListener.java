@@ -21,6 +21,7 @@ import org.dyn4j.world.listener.ContactListenerAdapter;
 
 import com.github.jontejj.cell.evolution.Eatable;
 import com.github.jontejj.cell.evolution.HasMouth;
+import com.github.jontejj.cell.evolution.UnicellularOrganism;
 
 public class MyContactListener extends ContactListenerAdapter<SimulationBody>
 {
@@ -49,6 +50,10 @@ public class MyContactListener extends ContactListenerAdapter<SimulationBody>
 			System.out.println("Collision detected between: " + body2 + " and " + body1);
 			((HasMouth) body2).eat((Eatable) body1);
 			((Eatable) body1).onEaten(world);
+		}
+		else if(body1 instanceof UnicellularOrganism && body2 instanceof UnicellularOrganism)
+		{
+			// TODO: aggregate organisms into a multicellular organism
 		}
 	}
 }

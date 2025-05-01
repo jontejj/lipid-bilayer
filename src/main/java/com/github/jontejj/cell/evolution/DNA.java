@@ -157,6 +157,8 @@ public class DNA
 		{
 			codons.add(Codon.getOrInitialize(nucleotides.get(i).toRNA(), nucleotides.get(i + 1).toRNA(), nucleotides.get(i + 2).toRNA()));
 		}
+		if(codons.isEmpty())
+			return Optional.absent();
 		return Optional.of(new mRNA(codons, this));
 	}
 

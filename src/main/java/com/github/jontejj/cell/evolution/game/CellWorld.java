@@ -75,6 +75,7 @@ public class CellWorld extends SimulationFrame
 	private Duration durationOfLastTimestep;
 	private Duration durationOfFission;
 	private ToggleStateKeyboardInputHandler printStats;
+	private Organism selectedOrganism;
 
 	public CellWorld()
 	{
@@ -140,7 +141,7 @@ public class CellWorld extends SimulationFrame
 	{
 
 		Rectangle shape = Geometry.createRectangle(0.5, 0.5);
-		DeadCell deadCell = new DeadCell(organism.cytoplasm().totalMolecularMass());
+		DeadCell deadCell = new DeadCell(organism.totalMolecularMass());
 		deadCell.addFixture(shape);
 		deadCell.setMass(MassType.NORMAL);
 		// Set dead cell position to organism's position
@@ -156,6 +157,10 @@ public class CellWorld extends SimulationFrame
 	{
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		Set<Organism> initialOrganisms = Sets.newHashSet();
+		// UnicellularOrganism human = new UnicellularOrganism("Homo sapiens", new Nucleus(Genome.generate(20000)), this.world);
+		// System.out.println("Time to generate " + human.name() + " genome: " + stopwatch);
+		// initialOrganisms.add(human);
+		// stopwatch = Stopwatch.createStarted();
 		// E. coli (bacteria) have around 4400 protein coding genes
 		// stopwatch = Stopwatch.createStarted();
 		// UnicellularOrganism eColi = new UnicellularOrganism("E. coli", new Nucleus(Genome.generate(4400)), this.world);
@@ -165,7 +170,7 @@ public class CellWorld extends SimulationFrame
 		// stopwatch = Stopwatch.createStarted();
 		UnicellularOrganism mycoplasmaGenitalium = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(480)), this.world);
 		mycoplasmaGenitalium.cytoplasm().setLastWormSegment(mycoplasmaGenitalium);
-		System.out.println("Time to generate genome: " + stopwatch);
+		System.out.println("Time to generate " + mycoplasmaGenitalium.name() + " genome: " + stopwatch);
 		initialOrganisms.add(mycoplasmaGenitalium);
 
 		return initialOrganisms;
@@ -196,7 +201,7 @@ public class CellWorld extends SimulationFrame
 			Optional<Organism> binaryFissionResult = organism.binaryFission();
 			if(binaryFissionResult.isPresent())
 			{
-				System.out.println("Time to execute fission: " + stopwatch);
+				System.out.println("Time to execute fission for " + organism.name() + ": " + stopwatch);
 			}
 			newOrganisms.addAll(binaryFissionResult.asSet());
 		}
@@ -218,7 +223,6 @@ public class CellWorld extends SimulationFrame
 		}
 		newOrganisms.forEach(org -> this.world.addBody(org));
 		removeDeletedBodies();
-
 	}
 
 	@Override
@@ -254,19 +258,17 @@ public class CellWorld extends SimulationFrame
 		}
 		g.drawString("Organisms: " + organisms.size(), 20, 70);
 		int y = 90;
-		for(Organism org : organisms)
+		if(selectedOrganism != null)
 		{
-			g.drawString("Name: " + ((UnicellularOrganism) org).name(), 20, y);
+			g.drawString("Name: " + selectedOrganism.name(), 20, y);
 			y += 15;
-			Map<Nucleobases, Long> nucleotideResources = org.cytoplasm().nucleotideResources();
+			Map<Nucleobases, Long> nucleotideResources = selectedOrganism.cytoplasm().nucleotideResources();
 			for(Entry<Nucleobases, Long> entry : nucleotideResources.entrySet())
 			{
 				g.drawString("" + entry.getKey() + ":" + entry.getValue(), 20, y);
 				y += 15;
 			}
 		}
-		// g.drawString("Hello", 20, 70);
-
 		g.setTransform(tx);
 	}
 
@@ -314,6 +316,16 @@ public class CellWorld extends SimulationFrame
 			world.removeBody(body);
 		}
 		bodiesToRemove.clear();
+	}
+
+	@Override
+	protected void onBodyMousePickingStart(SimulationBody body)
+	{
+		super.onBodyMousePickingStart(body);
+		if(body instanceof Organism)
+		{
+			selectedOrganism = (Organism) body;
+		}
 	}
 
 	public static void main(String[] args)

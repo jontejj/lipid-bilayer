@@ -14,42 +14,31 @@
  */
 package com.github.jontejj.cell.evolution;
 
-import java.util.List;
+import org.dyn4j.samples.framework.SimulationBody;
+import org.dyn4j.world.World;
 
-import com.github.jontejj.cell.evolution.proteins.Protein;
+import com.google.common.base.Optional;
 
-public class Nucleus
+public class MultiCellularOrganism extends Organism
 {
-	// TODO: division for some cell types and not for others
-	// TODO: create proteins based on transcription factors
 
-	private final Genome genome;
-
-	public Nucleus(Genome genome)
+	public MultiCellularOrganism(String name, Nucleus nucleus, World<SimulationBody> world)
 	{
-		this.genome = genome;
-	}
-
-	public Nucleus binaryFission(Cytoplasm cytoplasm)
-	{
-		// TODO: also mimic recombination
-		return new Nucleus(genome.replicate(cytoplasm));
-	}
-
-	public Genome genome()
-	{
-		return genome;
-	}
-
-	public List<Protein> timestep(Cytoplasm cytoplasm)
-	{
-		List<Protein> newProteins = genome.timestep(cytoplasm);
-		return newProteins;
+		super(name, nucleus, world);
 	}
 
 	@Override
-	public String toString()
+	public boolean timestep()
 	{
-		return genome.toString();
+		// TODO Auto-generated method stub
+		return false;
 	}
+
+	@Override
+	public Optional<Organism> binaryFission()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

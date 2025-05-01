@@ -44,10 +44,10 @@ public class ProteinTest
 
 		Cytoplasm minimalCytoplasm = new Cytoplasm(new Nucleus(Genome.generate(4)), world);
 
-		Protein protein = new DNA(Nucleobases.fromString("AUGCCAGAUCACUAA"), 0).transcribe(minimalCytoplasm).get().translate(minimalCytoplasm);
+		Protein protein = new DNA(Nucleobases.fromString("AUGCCAGAUCACUAA"), 0).transcribe(minimalCytoplasm).get().translate(minimalCytoplasm).get();
 		assertThat(protein.aminoAcids()).hasSameElementsAs(ImmutableList.of(Methionine, Proline, Aspartate, Histidine));
 
-		protein = new DNA(Nucleobases.fromString("AUGAUCUCCUAA"), 0).transcribe(minimalCytoplasm).get().translate(minimalCytoplasm);
+		protein = new DNA(Nucleobases.fromString("AUGAUCUCCUAA"), 0).transcribe(minimalCytoplasm).get().translate(minimalCytoplasm).get();
 		assertThat(protein.aminoAcids()).hasSameElementsAs(of(Methionine, Isoleucine, Serine));
 	}
 }

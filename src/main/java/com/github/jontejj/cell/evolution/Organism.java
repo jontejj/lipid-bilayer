@@ -27,18 +27,25 @@ public abstract class Organism extends SimulationBody
 	private double circleRadius;
 	private BodyFixture fixture;
 	private final Cytoplasm cytoplasm;
+	private final String name;
 
-	public Organism(Nucleus nucleus, World<SimulationBody> world)
+	public Organism(String name, Nucleus nucleus, World<SimulationBody> world)
 	{
-		this(nucleus, world, 1.0);
+		this(name, nucleus, world, 1.0);
 	}
 
-	public Organism(Nucleus nucleus, World<SimulationBody> world, double circleRadius)
+	public Organism(String name, Nucleus nucleus, World<SimulationBody> world, double circleRadius)
 	{
+		this.name = name;
 		this.circleRadius = circleRadius;
 		fixture = addFixture(Geometry.createCircle(circleRadius)); // a circular cell body
 		setMass(MassType.NORMAL);
 		this.cytoplasm = new Cytoplasm(nucleus, world);
+	}
+
+	public String name()
+	{
+		return name;
 	}
 
 	/**
@@ -63,5 +70,10 @@ public abstract class Organism extends SimulationBody
 		// circleRadius = circleRadius + circleRadius * sizeToAdd;
 		removeFixture(fixture);
 		fixture = addFixture(Geometry.createCircle(circleRadius));
+	}
+
+	public double totalMolecularMass()
+	{
+		return cytoplasm().totalMolecularMass();
 	}
 }

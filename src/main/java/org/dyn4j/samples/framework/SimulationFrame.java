@@ -66,8 +66,6 @@ import org.dyn4j.samples.framework.input.ToggleStateKeyboardInputHandler;
 import org.dyn4j.world.World;
 import org.dyn4j.world.WorldCollisionData;
 
-// TODO create a streaming world example
-
 /**
  * A simple framework for building samples.
  * 

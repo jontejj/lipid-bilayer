@@ -42,9 +42,6 @@ public class DeadCell extends SimulationBody implements Eatable
 	public void onEaten(CellWorld world)
 	{
 		world.deferRemoval(this);
-		// TODO: this causes Exception in thread "Thread-0" java.util.ConcurrentModificationException because it occurs during collision
-		// handling
-		// world.removeBody(this);
 	}
 
 	@Override

@@ -39,6 +39,7 @@ public class StructuralProtein extends FunctionalProtein
 	@Override
 	public void performFunction(Cytoplasm env)
 	{
+		// TODO: degrade protein instead
 		if(used)
 			return;
 		used = true;

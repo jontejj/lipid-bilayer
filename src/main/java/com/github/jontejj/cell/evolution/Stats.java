@@ -20,6 +20,7 @@ import java.math.RoundingMode;
 
 public class Stats
 {
+	public static long dnaReplicationProteinsCreated = 0;
 	public static long structuralProteinsCreated = 0;
 	public static long enzymeProteinsCreated = 0;
 	public static long transporterProteinsCreated = 0;
@@ -33,11 +34,11 @@ public class Stats
 
 	public static String asString()
 	{
-		return "pointMutations=" + pointMutations + ", additionMutations=" + additionMutations + ", deletionMutations=" + deletionMutations
-				+ ", structuralProteinsCreated=" + structuralProteinsCreated + ", enzymeProteinsCreated=" + enzymeProteinsCreated
-				+ ", transporterProteinsCreated=" + transporterProteinsCreated + ", regulatoryProteinCreated=" + regulatoryProteinCreated
-				+ ", genericProteinsCreated=" + genericProteinsCreated + ", totalProteinsCreated=" + totalProteinsCreated() + ", totalMassOfProteins="
-				+ totalMassOfProteins + ", averageProteinMass="
+		return "dnaReplicationProteinsCreated=" + dnaReplicationProteinsCreated + ", pointMutations=" + pointMutations + ", additionMutations="
+				+ additionMutations + ", deletionMutations=" + deletionMutations + ", structuralProteinsCreated=" + structuralProteinsCreated
+				+ ", enzymeProteinsCreated=" + enzymeProteinsCreated + ", transporterProteinsCreated=" + transporterProteinsCreated
+				+ ", regulatoryProteinCreated=" + regulatoryProteinCreated + ", genericProteinsCreated=" + genericProteinsCreated
+				+ ", totalProteinsCreated=" + totalProteinsCreated() + ", totalMassOfProteins=" + totalMassOfProteins + ", averageProteinMass="
 				+ totalMassOfProteins.divide(BigDecimal.valueOf(totalProteinsCreated()), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP)
 				+ ", averageNumberOfAminoAcids=" + totalNumberOfAminoAcids.divide(BigDecimal.valueOf(totalProteinsCreated()), MathContext.DECIMAL128)
 						.setScale(0, RoundingMode.HALF_UP);

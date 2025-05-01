@@ -83,7 +83,8 @@ public class Genome
 
 			// Use a skewed random distribution to prefer smaller proteins
 			double skewedRandom = Math.pow(RND.nextDouble(), 2); // Square to skew towards 0
-			int numberOfCodons = (int) (skewedRandom * 38000) + 10; // Ensuring at least 10 codons, The largest known protein in terms of
+			// TODO: change 3000 to 38000 when DNA has been optimized
+			int numberOfCodons = (int) (skewedRandom * 3000) + 10; // Ensuring at least 10 codons, The largest known protein in terms of
 																	 // amino acid sequence is titin (also known as connectin) (38,000 amino
 																	 // acids)
 			for(int i = 0; i < numberOfCodons; i++)
@@ -135,7 +136,7 @@ public class Genome
 		for(DNA dna : dnas)
 		{
 			dna.setEuchromatinModeRandomly();
-			newProteins.addAll(dna.transcribe(cytoplasm).transform(mRNA -> mRNA.translate(cytoplasm)).asSet());
+			dna.transcribe(cytoplasm).transform(mRNA -> mRNA.translate(cytoplasm).transform(protein -> newProteins.add(protein)));
 		}
 		return newProteins;
 	}

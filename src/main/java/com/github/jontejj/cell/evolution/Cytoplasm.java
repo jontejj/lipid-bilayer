@@ -39,6 +39,8 @@ public class Cytoplasm
 	private SimulationBody lastWormSegment;
 	private World<SimulationBody> world;
 
+	private boolean triggerFissionWhenPossible = false;
+
 	private int apoptosisWarningCounter = 0;
 	private static final int APOPTOSIS_THRESHOLD_TICKS = 1000;
 	private static final long NUCLEOTIDE_MIN_THRESHOLD = 100L;
@@ -56,6 +58,11 @@ public class Cytoplasm
 		{
 			aminoAcids.put(aa, 20000L);
 		}
+	}
+
+	public void triggerFissionWhenPossible()
+	{
+		triggerFissionWhenPossible = true;
 	}
 
 	public boolean shouldTriggerApoptosis()
@@ -178,13 +185,21 @@ public class Cytoplasm
 
 	public boolean supportsBinaryFission(Map<Nucleobases, Integer> requiredNucleotides)
 	{
+		if(!triggerFissionWhenPossible)
+			return false;
 		for(Map.Entry<Nucleobases, Integer> entry : requiredNucleotides.entrySet())
 		{
 			if(nucleotideResources().getOrDefault(entry.getKey(), 0L) < entry.getValue())
 				return false;
 		}
 		// TODO: base atp requirement on size of organism?
-		return atp > 50000;
+		boolean hasEnoughATP = atp > 50000;
+		if(hasEnoughATP)
+		{
+			// Only trigger one fission per DnaA protein
+			triggerFissionWhenPossible = false;
+		}
+		return true;
 	}
 
 	@Override

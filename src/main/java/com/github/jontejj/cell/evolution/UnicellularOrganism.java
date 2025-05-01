@@ -22,21 +22,18 @@ import com.google.common.base.Optional;
 
 public class UnicellularOrganism extends Organism implements HasMouth
 {
-	private final String name;
 	private final Nucleus nucleus;
 
 	public UnicellularOrganism(String name, Nucleus nucleus, World<SimulationBody> world)
 	{
-		super(nucleus, world);
-		this.name = name;
+		super(name, nucleus, world);
 		this.nucleus = nucleus;
 
 	}
 
 	public UnicellularOrganism(String name, Nucleus nucleus, World<SimulationBody> world, double circleRadius)
 	{
-		super(nucleus, world, circleRadius);
-		this.name = name;
+		super(name, nucleus, world, circleRadius);
 		this.nucleus = nucleus;
 	}
 
@@ -53,12 +50,7 @@ public class UnicellularOrganism extends Organism implements HasMouth
 	@Override
 	public String toString()
 	{
-		return name + ": " + cytoplasm();
-	}
-
-	public String name()
-	{
-		return name;
+		return name() + ": " + cytoplasm();
 	}
 
 	@Override
@@ -68,7 +60,7 @@ public class UnicellularOrganism extends Organism implements HasMouth
 		{
 			Nucleus newNucleus = nucleus.binaryFission(cytoplasm());
 			adjustBodySize(-0.5);
-			UnicellularOrganism newOrganism = new UnicellularOrganism(name, newNucleus, cytoplasm().world(), circleRadius());
+			UnicellularOrganism newOrganism = new UnicellularOrganism(name(), newNucleus, cytoplasm().world(), circleRadius());
 			newOrganism.cytoplasm().setLastWormSegment(newOrganism);
 			Vector2 offset = new Vector2(0.5, 0.0); // New organism appears 0.5 units to the right
 			newOrganism.translate(this.getWorldCenter().sum(offset));
