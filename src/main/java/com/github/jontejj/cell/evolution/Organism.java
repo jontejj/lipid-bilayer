@@ -14,9 +14,8 @@
  */
 package com.github.jontejj.cell.evolution;
 
-import org.dyn4j.dynamics.BodyFixture;
-import org.dyn4j.geometry.Geometry;
-import org.dyn4j.geometry.MassType;
+import java.util.Map;
+
 import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.world.World;
 
@@ -24,28 +23,27 @@ import com.google.common.base.Optional;
 
 public abstract class Organism extends SimulationBody
 {
-	private double circleRadius;
-	private BodyFixture fixture;
-	private final Cytoplasm cytoplasm;
 	private final String name;
+	private Organism parentOrganism = null;
+	private static long ORGANISM_ID = 1;
 
-	public Organism(String name, Nucleus nucleus, World<SimulationBody> world)
-	{
-		this(name, nucleus, world, 1.0);
-	}
+	private long organismId;
 
-	public Organism(String name, Nucleus nucleus, World<SimulationBody> world, double circleRadius)
+	public Organism(String name)
 	{
 		this.name = name;
-		this.circleRadius = circleRadius;
-		fixture = addFixture(Geometry.createCircle(circleRadius)); // a circular cell body
-		setMass(MassType.NORMAL);
-		this.cytoplasm = new Cytoplasm(nucleus, world);
+		this.organismId = ORGANISM_ID++;
 	}
 
 	public String name()
 	{
 		return name;
+	}
+
+	@Override
+	public String toString()
+	{
+		return name + "#" + organismId;
 	}
 
 	/**
@@ -55,25 +53,19 @@ public abstract class Organism extends SimulationBody
 
 	public abstract Optional<Organism> binaryFission();
 
-	public double circleRadius()
+	public abstract double totalMolecularMass();
+
+	public abstract Map<Nucleobases, Long> nucleotideResources();
+
+	public void setParentOrganism(Organism parent)
 	{
-		return circleRadius;
+		this.parentOrganism = parent;
 	}
 
-	public Cytoplasm cytoplasm()
+	public Organism getRootOrganism()
 	{
-		return cytoplasm;
+		return (parentOrganism != null) ? parentOrganism.getRootOrganism() : this;
 	}
 
-	void adjustBodySize(double sizeToAdd)
-	{
-		// circleRadius = circleRadius + circleRadius * sizeToAdd;
-		removeFixture(fixture);
-		fixture = addFixture(Geometry.createCircle(circleRadius));
-	}
-
-	public double totalMolecularMass()
-	{
-		return cytoplasm().totalMolecularMass();
-	}
+	public abstract void removeFromWorld(World<SimulationBody> world);
 }

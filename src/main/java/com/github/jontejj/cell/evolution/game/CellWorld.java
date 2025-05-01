@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.assertj.core.util.Sets;
+import org.dyn4j.dynamics.joint.Joint;
 import org.dyn4j.geometry.Circle;
 import org.dyn4j.geometry.Geometry;
 import org.dyn4j.geometry.MassType;
@@ -72,6 +73,7 @@ public class CellWorld extends SimulationFrame
 	private static final long serialVersionUID = 5663760293144882635L;
 	private Set<Organism> organisms;
 	private final List<SimulationBody> bodiesToRemove = new ArrayList<>();
+	private final List<Joint<SimulationBody>> jointsToAdd = new ArrayList<>();
 	private Duration durationOfLastTimestep;
 	private Duration durationOfFission;
 	private ToggleStateKeyboardInputHandler printStats;
@@ -137,6 +139,16 @@ public class CellWorld extends SimulationFrame
 		this.world.addBody(apple);
 	}
 
+	public void addOrganism(Organism organism)
+	{
+		organisms.add(organism);
+	}
+
+	public void removeOrganism(Organism organism)
+	{
+		organisms.remove(organism);
+	}
+
 	private void addDeadCellForOrganism(Organism organism)
 	{
 
@@ -186,7 +198,7 @@ public class CellWorld extends SimulationFrame
 			boolean organismShouldDie = organism.timestep();
 			if(organismShouldDie)
 			{
-				world.removeBody(organism);
+				organism.removeFromWorld(world);
 				addDeadCellForOrganism(organism);
 				deadOrganisms.add(organism);
 			}
@@ -201,7 +213,7 @@ public class CellWorld extends SimulationFrame
 			Optional<Organism> binaryFissionResult = organism.binaryFission();
 			if(binaryFissionResult.isPresent())
 			{
-				System.out.println("Time to execute fission for " + organism.name() + ": " + stopwatch);
+				// System.out.println("Time to execute fission for " + organism.name() + ": " + stopwatch);
 			}
 			newOrganisms.addAll(binaryFissionResult.asSet());
 		}
@@ -210,7 +222,7 @@ public class CellWorld extends SimulationFrame
 			durationOfFission = stopwatch.elapsed();
 		}
 
-		organisms.addAll(newOrganisms);
+		newOrganisms.forEach(newOrganism -> addOrganism(newOrganism));
 		organisms.removeAll(deadOrganisms);
 		if(organisms.isEmpty())
 		{
@@ -223,6 +235,7 @@ public class CellWorld extends SimulationFrame
 		}
 		newOrganisms.forEach(org -> this.world.addBody(org));
 		removeDeletedBodies();
+		addJoints();
 	}
 
 	@Override
@@ -262,7 +275,7 @@ public class CellWorld extends SimulationFrame
 		{
 			g.drawString("Name: " + selectedOrganism.name(), 20, y);
 			y += 15;
-			Map<Nucleobases, Long> nucleotideResources = selectedOrganism.cytoplasm().nucleotideResources();
+			Map<Nucleobases, Long> nucleotideResources = selectedOrganism.nucleotideResources();
 			for(Entry<Nucleobases, Long> entry : nucleotideResources.entrySet())
 			{
 				g.drawString("" + entry.getKey() + ":" + entry.getValue(), 20, y);
@@ -318,6 +331,20 @@ public class CellWorld extends SimulationFrame
 		bodiesToRemove.clear();
 	}
 
+	public void deferAddition(Joint<SimulationBody> joint)
+	{
+		jointsToAdd.add(joint);
+	}
+
+	void addJoints()
+	{
+		for(Joint<SimulationBody> joint : jointsToAdd)
+		{
+			world.addJoint(joint);
+		}
+		jointsToAdd.clear();
+	}
+
 	@Override
 	protected void onBodyMousePickingStart(SimulationBody body)
 	{
@@ -325,6 +352,7 @@ public class CellWorld extends SimulationFrame
 		if(body instanceof Organism)
 		{
 			selectedOrganism = (Organism) body;
+			System.out.println("Selected: " + selectedOrganism);
 		}
 	}
 
