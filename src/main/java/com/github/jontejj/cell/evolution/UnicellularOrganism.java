@@ -103,7 +103,7 @@ public class UnicellularOrganism extends Organism implements HasMouth
 			Vector2 offset = new Vector2(dx, dy);
 			newOrganism.translate(this.getWorldCenter().sum(offset));
 			// Set velocities for separation
-			double pushSpeed = 2.5; // adjust as needed (higher = faster separation)
+			double pushSpeed = 1.0; // adjust as needed (higher = faster separation)
 			Vector2 pushVelocity = offset.getNormalized().product(pushSpeed);
 			// Apply opposite velocities
 			this.setLinearVelocity(pushVelocity.product(-1.0)); // Parent goes backward

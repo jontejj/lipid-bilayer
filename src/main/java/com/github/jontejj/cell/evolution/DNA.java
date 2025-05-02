@@ -24,6 +24,7 @@ import org.assertj.core.util.Lists;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 public class DNA
 {
@@ -63,7 +64,7 @@ public class DNA
 
 	public DNA(List<Nucleobases> nucleotides, int position)
 	{
-		this(nucleotides, position, calculateNucleotideCounts(nucleotides), calculatemolecularMass(nucleotides));
+		this(nucleotides, position, calculateNucleotideCounts(nucleotides), calculateMolecularMass(nucleotides));
 
 	}
 
@@ -77,7 +78,7 @@ public class DNA
 		return nucleotideCounts;
 	}
 
-	private static double calculatemolecularMass(List<Nucleobases> nucleotides)
+	private static double calculateMolecularMass(List<Nucleobases> nucleotides)
 	{
 		return nucleotides.stream().mapToDouble(Nucleobases::molecularMass).sum();
 	}
@@ -194,6 +195,8 @@ public class DNA
 		}
 
 		List<Nucleobases> newNucleotides = null;
+		EnumMap<Nucleobases, Integer> newNucleotideCounts = Maps.newEnumMap(nucleotideCounts);
+		double newMolecularMass = molecularMass;
 		for(int i = 0; i < nucleotides.size(); i++)
 		{
 			Nucleobases base = nucleotides.get(i);
@@ -207,6 +210,7 @@ public class DNA
 				ImmutableList<Nucleobases> otherBases = base.othersDna();
 				Nucleobases mutation = otherBases.get(RND.nextInt(otherBases.size()));
 				newNucleotides.add(mutation);
+				newNucleotideCounts.merge(mutation, 1, Integer::sum);
 				Stats.pointMutations++;
 				continue;
 			}
@@ -220,6 +224,7 @@ public class DNA
 				newNucleotides.add(base);
 				Nucleobases addition = Nucleobases.values()[(RND.nextInt(Nucleobases.values().length))];
 				newNucleotides.add(addition);
+				newNucleotideCounts.merge(addition, 1, Integer::sum);
 				Stats.additionMutations++;
 				continue;
 			}
@@ -230,14 +235,19 @@ public class DNA
 				{
 					newNucleotides = new ArrayList<>(nucleotides.subList(0, i));
 				}
+				newNucleotideCounts.merge(base, -1, Integer::sum);
 				Stats.deletionMutations++;
 				continue;
+			}
+			if(newNucleotides != null)
+			{
+				newNucleotides.add(base);
 			}
 		}
 		DNA dna;
 		if(newNucleotides != null)
 		{
-			dna = new DNA(newNucleotides, position);
+			dna = new DNA(newNucleotides, position, newNucleotideCounts, newMolecularMass);
 		}
 		else
 		{
