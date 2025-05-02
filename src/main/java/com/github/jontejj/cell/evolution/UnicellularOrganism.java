@@ -124,8 +124,11 @@ public class UnicellularOrganism extends Organism implements HasMouth
 	@Override
 	public void eat(Eatable food)
 	{
-		long averageAmount = (long) (food.molecularMass() / Nucleobases.averageMolecularMass());
-		cytoplasm().increaseResourceAmountForAllNucleotides(averageAmount);
+		// Convert grams to moles, then to molecules
+		double moles = food.mass() / Nucleobases.averageMolarMass(); // mol
+		long numberOfMolecules = (long) (moles * Constants.AVOGADROS_NUMBER); // actual count
+		// TODO: act differently for different foods and nutrients
+		cytoplasm().increaseResourceAmountForAllNucleotides(numberOfMolecules);
 	}
 
 	@Override
@@ -135,9 +138,9 @@ public class UnicellularOrganism extends Organism implements HasMouth
 	}
 
 	@Override
-	public double totalMolecularMass()
+	public double totalMass()
 	{
-		return cytoplasm.totalMolecularMass();
+		return cytoplasm.totalMass();
 	}
 
 	@Override

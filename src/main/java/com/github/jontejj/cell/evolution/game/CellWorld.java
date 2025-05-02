@@ -63,8 +63,8 @@ import com.github.jontejj.cell.evolution.Nucleus;
 import com.github.jontejj.cell.evolution.Organism;
 import com.github.jontejj.cell.evolution.Stats;
 import com.github.jontejj.cell.evolution.UnicellularOrganism;
-import com.github.jontejj.cell.evolution.food.Apple;
 import com.github.jontejj.cell.evolution.food.DeadCell;
+import com.github.jontejj.cell.evolution.food.GlucoseMolecules;
 import com.google.common.base.Optional;
 import com.google.common.base.Stopwatch;
 
@@ -130,13 +130,13 @@ public class CellWorld extends SimulationFrame
 
 		// create an apple object (food)
 		Circle shape = Geometry.createCircle(0.1);
-		Apple apple = new Apple();
-		apple.addFixture(shape);
-		apple.setMass(MassType.NORMAL);
-		apple.translate(-1.0, 2.0);
+		GlucoseMolecules glucose = new GlucoseMolecules();
+		glucose.addFixture(shape);
+		glucose.setMass(MassType.NORMAL);
+		glucose.translate(-1.0, 2.0);
 		// test having a velocity
 		// apple.getLinearVelocity().set(5.0, 0.0);
-		this.world.addBody(apple);
+		this.world.addBody(glucose);
 	}
 
 	public void addOrganism(Organism organism)
@@ -153,7 +153,7 @@ public class CellWorld extends SimulationFrame
 	{
 
 		Rectangle shape = Geometry.createRectangle(0.5, 0.5);
-		DeadCell deadCell = new DeadCell(organism.totalMolecularMass());
+		DeadCell deadCell = new DeadCell(organism.name(), organism.totalMass());
 		deadCell.addFixture(shape);
 		deadCell.setMass(MassType.NORMAL);
 		// Set dead cell position to organism's position

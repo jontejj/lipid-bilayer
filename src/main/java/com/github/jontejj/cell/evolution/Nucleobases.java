@@ -62,7 +62,7 @@ public enum Nucleobases
 		return "" + abv;
 	}
 
-	public double molecularMass()
+	public double molarMass()
 	{
 		return molecularMass;
 	}
@@ -77,9 +77,9 @@ public enum Nucleobases
 		return othersDna;
 	}
 
-	public static double averageMolecularMass()
+	public static double averageMolarMass()
 	{
-		return (CYTOSINE.molecularMass() + GUANINE.molecularMass() + ADENINE.molecularMass() + THYMINE.molecularMass() + URACIL.molecularMass()) / 5;
+		return (CYTOSINE.molarMass() + GUANINE.molarMass() + ADENINE.molarMass() + THYMINE.molarMass() + URACIL.molarMass()) / 5;
 	}
 
 	public static ImmutableSet<Nucleobases> DNA = Sets.immutableEnumSet(CYTOSINE, GUANINE, ADENINE, THYMINE);

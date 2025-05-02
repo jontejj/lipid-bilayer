@@ -12,31 +12,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.evolution.food;
+package com.github.jontejj.cell.evolution;
 
-import org.dyn4j.samples.framework.SimulationBody;
-
-import com.github.jontejj.cell.evolution.Eatable;
-import com.github.jontejj.cell.evolution.game.CellWorld;
-
-public class Apple extends SimulationBody implements Eatable
+public class Constants
 {
-
-	@Override
-	public double molecularMass()
-	{
-		return 4000;
-	}
-
-	@Override
-	public void onEaten(CellWorld world)
-	{
-		world.deferRemoval(this);
-	}
-
-	@Override
-	public String toString()
-	{
-		return getClass().getSimpleName();
-	}
+	public static double AVOGADROS_NUMBER = 6.02214076 * Math.pow(10, 23);
 }

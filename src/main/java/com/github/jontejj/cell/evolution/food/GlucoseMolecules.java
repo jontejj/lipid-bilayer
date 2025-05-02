@@ -16,29 +16,20 @@ package com.github.jontejj.cell.evolution.food;
 
 import org.dyn4j.samples.framework.SimulationBody;
 
+import com.github.jontejj.cell.evolution.Constants;
 import com.github.jontejj.cell.evolution.Eatable;
 import com.github.jontejj.cell.evolution.game.CellWorld;
 
-public class DeadCell extends SimulationBody implements Eatable
+public class GlucoseMolecules extends SimulationBody implements Eatable
 {
-	private final double massOfCell;
-	private String nameOfDeadOrganism;
 
-	/**
-	 * @param nameOfDeadOrganism the name of the dead cell
-	 * @param massOfCell from a dead cell this would be the sum of all nucleotides of its genome in the nucleus and the total mass of its
-	 *            proteins (expressed in grams)
-	 */
-	public DeadCell(String nameOfDeadOrganism, double massOfCell)
-	{
-		this.nameOfDeadOrganism = nameOfDeadOrganism;
-		this.massOfCell = massOfCell;
-	}
+	private static final double MOLECULAR_MASS = 180.16e-3; // g/mol for glucose
+	private static final long MOLECULE_COUNT = 1_000_000; // 1 million glucose molecules
 
 	@Override
 	public double mass()
 	{
-		return massOfCell;
+		return (MOLECULAR_MASS / Constants.AVOGADROS_NUMBER) * MOLECULE_COUNT;
 	}
 
 	@Override
@@ -50,6 +41,6 @@ public class DeadCell extends SimulationBody implements Eatable
 	@Override
 	public String toString()
 	{
-		return "Dead cell for " + nameOfDeadOrganism + " with " + massOfCell + " grams";
+		return "GlucoseMolecule";
 	}
 }

@@ -44,9 +44,9 @@ public class Protein
 		return aminoAcids().toString();
 	}
 
-	public double molecularMass()
+	public double molarMass()
 	{
-		return sequence.molecularMass();
+		return sequence.molarMass();
 	}
 
 	public List<AminoAcid> aminoAcids()

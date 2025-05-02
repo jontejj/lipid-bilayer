@@ -32,16 +32,16 @@ public class EnzymeProtein extends FunctionalProtein
 	@Override
 	public void performFunction(Cytoplasm env)
 	{
-		if(env.decreaseResourceAmount(baseToConsume, (long) (MINIMUM_SIZE / molecularMass()))) // Bigger enzymes consume less resources!
+		if(env.decreaseResourceAmount(baseToConsume, (long) (MINIMUM_SIZE / molarMass()))) // Bigger enzymes consume less resources!
 		{
-			env.addEnergy((long) (4.0 * molecularMass() / 1000.0)); // And adds more energy
+			env.addEnergy((long) (4.0 * molarMass() / 1000.0)); // And adds more energy
 		}
 	}
 
 	@Override
 	public String toString()
 	{
-		return "Enzyme that consumes " + (long) (MINIMUM_SIZE / molecularMass()) + " of " + baseToConsume + " and gives "
-				+ (long) (4.0 * molecularMass() / 1000.0) + " atp";
+		return "Enzyme that consumes " + (long) (MINIMUM_SIZE / molarMass()) + " of " + baseToConsume + " and gives "
+				+ (long) (4.0 * molarMass() / 1000.0) + " atp";
 	}
 }

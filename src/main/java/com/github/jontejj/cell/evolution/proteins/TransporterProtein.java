@@ -34,7 +34,7 @@ public class TransporterProtein extends FunctionalProtein
 		if(env.consumeEnergy(1))
 		{
 			// TODO: the amount should be taken from outside of the cell (not appear out of nothing)
-			env.increaseResourceAmount(baseToTransport, (long) (5.0 * molecularMass() / 1000.0)); // Bigger transporter moves more!
+			env.increaseResourceAmount(baseToTransport, (long) (5.0 * molarMass() / 1000.0)); // Bigger transporter moves more!
 		}
 	}
 

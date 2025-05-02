@@ -53,8 +53,7 @@ public abstract class Organism extends SimulationBody
 
 	public abstract Optional<Organism> binaryFission();
 
-	// TODO: change this to weight / regular mass instead (i.e convert g/mol to g based on the amount of nucleotides etc)
-	public abstract double totalMolecularMass();
+	public abstract double totalMass();
 
 	public abstract Map<Nucleobases, Long> nucleotideResources();
 

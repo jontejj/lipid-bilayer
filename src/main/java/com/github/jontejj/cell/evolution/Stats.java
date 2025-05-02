@@ -26,7 +26,6 @@ public class Stats
 	public static long transporterProteinsCreated = 0;
 	public static long regulatoryProteinCreated = 0;
 	public static long genericProteinsCreated = 0;
-	public static BigDecimal totalMassOfProteins = BigDecimal.ZERO;
 	public static BigDecimal totalNumberOfAminoAcids = BigDecimal.ZERO;
 	public static long pointMutations = 0;
 	public static long additionMutations = 0;
@@ -38,10 +37,8 @@ public class Stats
 				+ additionMutations + ", deletionMutations=" + deletionMutations + ", structuralProteinsCreated=" + structuralProteinsCreated
 				+ ", enzymeProteinsCreated=" + enzymeProteinsCreated + ", transporterProteinsCreated=" + transporterProteinsCreated
 				+ ", regulatoryProteinCreated=" + regulatoryProteinCreated + ", genericProteinsCreated=" + genericProteinsCreated
-				+ ", totalProteinsCreated=" + totalProteinsCreated() + ", totalMassOfProteins=" + totalMassOfProteins + ", averageProteinMass="
-				+ totalMassOfProteins.divide(BigDecimal.valueOf(totalProteinsCreated()), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP)
-				+ ", averageNumberOfAminoAcids=" + totalNumberOfAminoAcids.divide(BigDecimal.valueOf(totalProteinsCreated()), MathContext.DECIMAL128)
-						.setScale(0, RoundingMode.HALF_UP);
+				+ ", totalProteinsCreated=" + totalProteinsCreated() + ", averageNumberOfAminoAcids=" + totalNumberOfAminoAcids
+						.divide(BigDecimal.valueOf(totalProteinsCreated()), MathContext.DECIMAL128).setScale(0, RoundingMode.HALF_UP);
 	}
 
 	public static long totalProteinsCreated()

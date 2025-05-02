@@ -82,9 +82,9 @@ public class MulticellularOrganism extends Organism
 	}
 
 	@Override
-	public double totalMolecularMass()
+	public double totalMass()
 	{
-		return cells.stream().mapToDouble(cell -> cell.totalMolecularMass()).sum();
+		return cells.stream().mapToDouble(cell -> cell.totalMass()).sum();
 	}
 
 	@Override

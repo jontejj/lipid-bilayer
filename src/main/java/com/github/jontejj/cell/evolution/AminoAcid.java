@@ -46,12 +46,12 @@ public enum AminoAcid
 	Valine("Val", 117.148);
 
 	private final String shortName;
-	private final double molecularMass;
+	private final double molarMass;
 
-	private AminoAcid(String shortName, double molecularMass)
+	private AminoAcid(String shortName, double molarMass)
 	{
 		this.shortName = shortName;
-		this.molecularMass = molecularMass;
+		this.molarMass = molarMass;
 	}
 
 	@Override
@@ -65,9 +65,9 @@ public enum AminoAcid
 		return shortName;
 	}
 
-	public double molecularMass()
+	public double molarMass()
 	{
-		return molecularMass;
+		return molarMass;
 	}
 
 }

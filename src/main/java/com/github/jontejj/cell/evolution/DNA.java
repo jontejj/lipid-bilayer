@@ -38,7 +38,7 @@ public class DNA
 	}
 
 	private List<Nucleobases> nucleotides;
-	private final double molecularMass;
+	private final double molarMass;
 
 	private ChromatinMode chromatinMode = ChromatinMode.HETEROCHROMATIN;
 
@@ -51,20 +51,20 @@ public class DNA
 	 * @param position where in the Genome the DNA is located
 	 * @param nucleotideCounts counts for how many of each nucleotide occurs in the nucleotides parameter
 	 */
-	public DNA(List<Nucleobases> nucleotides, int position, Map<Nucleobases, Integer> nucleotideCounts, double molecularMass)
+	public DNA(List<Nucleobases> nucleotides, int position, Map<Nucleobases, Integer> nucleotideCounts, double molarMass)
 	{
 		if(nucleotides.isEmpty())
 			throw new IllegalStateException("a DNA of length zero is not allowed");
 		this.nucleotides = nucleotides;
 		this.position = position;
-		this.molecularMass = molecularMass;
+		this.molarMass = molarMass;
 		setEuchromatinModeForHouseKeepingGenes();
 		this.nucleotideCounts = nucleotideCounts;
 	}
 
 	public DNA(List<Nucleobases> nucleotides, int position)
 	{
-		this(nucleotides, position, calculateNucleotideCounts(nucleotides), calculateMolecularMass(nucleotides));
+		this(nucleotides, position, calculateNucleotideCounts(nucleotides), calculateMolarMass(nucleotides));
 
 	}
 
@@ -78,9 +78,9 @@ public class DNA
 		return nucleotideCounts;
 	}
 
-	private static double calculateMolecularMass(List<Nucleobases> nucleotides)
+	private static double calculateMolarMass(List<Nucleobases> nucleotides)
 	{
-		return nucleotides.stream().mapToDouble(Nucleobases::molecularMass).sum();
+		return nucleotides.stream().mapToDouble(Nucleobases::molarMass).sum();
 	}
 
 	private void setEuchromatinModeForHouseKeepingGenes()
@@ -116,9 +116,9 @@ public class DNA
 		this.chromatinMode = ChromatinMode.EUCHROMATIN;
 	}
 
-	public double molecularMass()
+	public double molarMass()
 	{
-		return molecularMass;
+		return molarMass;
 	}
 
 	public Map<Nucleobases, Integer> nucleotideCounts()
@@ -189,14 +189,14 @@ public class DNA
 		if(!attemptMutation)
 		{
 			// Fast path, no mutation
-			DNA dna = new DNA(nucleotides, position, nucleotideCounts, molecularMass);
+			DNA dna = new DNA(nucleotides, position, nucleotideCounts, molarMass);
 			dna.chromatinMode = this.chromatinMode;
 			return Optional.of(dna);
 		}
 
 		List<Nucleobases> newNucleotides = null;
 		EnumMap<Nucleobases, Integer> newNucleotideCounts = Maps.newEnumMap(nucleotideCounts);
-		double newMolecularMass = molecularMass;
+		double newMolarMass = molarMass;
 		for(int i = 0; i < nucleotides.size(); i++)
 		{
 			Nucleobases base = nucleotides.get(i);
@@ -247,11 +247,11 @@ public class DNA
 		DNA dna;
 		if(newNucleotides != null)
 		{
-			dna = new DNA(newNucleotides, position, newNucleotideCounts, newMolecularMass);
+			dna = new DNA(newNucleotides, position, newNucleotideCounts, newMolarMass);
 		}
 		else
 		{
-			dna = new DNA(nucleotides, dnaSize, nucleotideCounts, molecularMass);
+			dna = new DNA(nucleotides, dnaSize, nucleotideCounts, molarMass);
 		}
 		dna.chromatinMode = this.chromatinMode;
 		return Optional.of(dna);

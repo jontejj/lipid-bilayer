@@ -30,13 +30,13 @@ public class Genome
 {
 	private final static Random RND = new Random();
 	private final List<DNA> dnas;
-	private final double molecularMass;
+	private final double molarMass;
 	private final Map<Nucleobases, Integer> totalNucleotideCounts;
 
 	public Genome(List<DNA> dnas)
 	{
 		this.dnas = dnas;
-		this.molecularMass = dnas.stream().mapToDouble(DNA::molecularMass).sum();
+		this.molarMass = dnas.stream().mapToDouble(DNA::molarMass).sum();
 		this.totalNucleotideCounts = calculateTotalNucleotideCounts();
 	}
 
@@ -58,9 +58,17 @@ public class Genome
 		return totalNucleotideCounts;
 	}
 
-	public double molecularMass()
+	/**
+	 * @return mass expressed in grams
+	 */
+	public double mass()
 	{
-		return molecularMass;
+		return molarMass() / Constants.AVOGADROS_NUMBER;
+	}
+
+	public double molarMass()
+	{
+		return molarMass;
 	}
 
 	public Genome replicate(Cytoplasm cytoplasm)
@@ -157,6 +165,6 @@ public class Genome
 	@Override
 	public String toString()
 	{
-		return "Number of dnas = " + dnas.size() + ", mass = " + molecularMass;
+		return "Number of dnas = " + dnas.size() + ", mass = " + mass();
 	}
 }

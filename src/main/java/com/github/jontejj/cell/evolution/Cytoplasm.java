@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class Cytoplasm
 {
-	private static double ATP_MOLECULAR_MASS = 507.18;
+	private static double ATP_MOLAR_MASS = 507.18;
 
 	private long atp = 1000;
 	private Map<Nucleobases, Long> nucleotides = new EnumMap<>(Nucleobases.class);
@@ -91,24 +91,28 @@ public class Cytoplasm
 		return false;
 	}
 
-	public double totalMolecularMass()
+	public double totalMass()
 	{
 		double totalMass = 0.0;
-		totalMass += nucleus.genome().molecularMass();
+		totalMass += nucleus.genome().mass();
 		for(Map.Entry<Nucleobases, Long> entry : nucleotides.entrySet())
 		{
-			totalMass += entry.getValue() * entry.getKey().molecularMass();
+			double molarMass = entry.getKey().molarMass(); // g/mol
+			long count = entry.getValue(); // number of molecules
+			totalMass += count * (molarMass / Constants.AVOGADROS_NUMBER); // g
 		}
 		for(Map.Entry<AminoAcid, Long> entry : aminoAcids.entrySet())
 		{
-			totalMass += entry.getValue() * entry.getKey().molecularMass();
+			double molarMass = entry.getKey().molarMass(); // g/mol
+			long count = entry.getValue(); // number of molecules
+			totalMass += count * (molarMass / Constants.AVOGADROS_NUMBER); // g
 		}
 		for(Protein p : proteinsInCytoplasm)
 		{
-			totalMass += p.molecularMass();
+			totalMass += 1 * (p.molarMass() / Constants.AVOGADROS_NUMBER);
 		}
 
-		totalMass += atp * ATP_MOLECULAR_MASS;
+		totalMass += atp * (ATP_MOLAR_MASS / Constants.AVOGADROS_NUMBER);
 
 		return totalMass;
 	}

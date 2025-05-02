@@ -16,7 +16,7 @@ package com.github.jontejj.cell.evolution;
 
 import java.util.List;
 
-public record AminoAcidSequence(List<AminoAcid> aminoacids, double molecularMass, long signature)
+public record AminoAcidSequence(List<AminoAcid> aminoacids, double molarMass, long signature)
 {
 
 }

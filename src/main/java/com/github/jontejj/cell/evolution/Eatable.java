@@ -21,7 +21,7 @@ public interface Eatable
 	/**
 	 * @return How much the food gives to the worm
 	 */
-	double molecularMass();
+	double mass();
 
 	/**
 	 * Food reaction (e.g., disappear after eaten)

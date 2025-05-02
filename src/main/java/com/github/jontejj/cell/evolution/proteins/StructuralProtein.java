@@ -57,7 +57,7 @@ public class StructuralProtein extends FunctionalProtein
 
 				// Create new body part (segment)
 				SimulationBody segment = new SimulationBody();
-				double size = 0.3 + (molecularMass() % 10000) / 50000.0; // ~0.3 - 0.5
+				double size = 0.3 + (molarMass() % 10000) / 50000.0; // ~0.3 - 0.5
 				segment.addFixture(Geometry.createCircle(size));
 				segment.setMass(MassType.NORMAL);
 

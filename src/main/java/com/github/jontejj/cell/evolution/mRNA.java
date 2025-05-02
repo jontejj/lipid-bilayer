@@ -71,11 +71,10 @@ public class mRNA
 			return Optional.absent();
 		Stats.totalNumberOfAminoAcids = Stats.totalNumberOfAminoAcids.add(BigDecimal.valueOf(aminoacids.size()));
 		// TODO: how to fold the protein based on the amino acids?
-		double molecularMass = aminoacids.stream().mapToDouble(AminoAcid::molecularMass).sum();
-		Stats.totalMassOfProteins = Stats.totalMassOfProteins.add(BigDecimal.valueOf(molecularMass));
+		double molarMass = aminoacids.stream().mapToDouble(AminoAcid::molarMass).sum();
 		// TODO: how to make the sequenceSignature not change that much after a small mutation?
 		long sequenceSignature = aminoacids.stream().mapToLong(a -> a.shortName().hashCode()).reduce(1L, (acc, h) -> 31L * acc + h);
-		AminoAcidSequence aminoAcidSequence = new AminoAcidSequence(aminoacids, molecularMass, sequenceSignature);
+		AminoAcidSequence aminoAcidSequence = new AminoAcidSequence(aminoacids, molarMass, sequenceSignature);
 		// Choose protein type based on features
 		if(aminoacids.size() > 5 && aminoacids.get(1) == AminoAcid.Leucine && aminoacids.get(2) == AminoAcid.Leucine)
 		{
@@ -89,7 +88,7 @@ public class mRNA
 			// The first few amino acids that make up DnaA
 			return Optional.of(new DnaA(aminoAcidSequence));
 		}
-		else if(molecularMass > EnzymeProtein.MINIMUM_SIZE)
+		else if(molarMass > EnzymeProtein.MINIMUM_SIZE)
 		{
 			Stats.enzymeProteinsCreated++;
 
