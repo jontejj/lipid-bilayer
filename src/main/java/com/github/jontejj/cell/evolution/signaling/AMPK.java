@@ -12,32 +12,30 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.evolution.proteins;
+package com.github.jontejj.cell.evolution.signaling;
 
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.Organism;
+import com.github.jontejj.cell.evolution.proteins.EnzymeProtein;
 
-public class DnaA extends FunctionalProtein
+public class AMPK extends EnzymeProtein
 {
-	private boolean used = false;
+	private double sensitivity;
 
-	public DnaA(AminoAcidSequence aminoAcidSequence)
+	public AMPK(AminoAcidSequence aminoAcidSequence)
 	{
 		super(aminoAcidSequence);
+		sensitivity = (Math.abs(sequenceSignature()) % 100) * 1000;
 	}
 
 	@Override
 	public void performFunction(Cytoplasm env, Organism organism)
 	{
-		if(used)
-			return;
-		used = true;
-
-		if(env.consumeEnergy(1))
+		if(env.isLowOnEnergy(sensitivity))
 		{
-			env.triggerFissionWhenPossible();
+			// TODO: this should not signal other organisms but limit protein synthezis in the same organism?
+			organism.getRootOrganism().signal(new LowEnergy());
 		}
 	}
-
 }

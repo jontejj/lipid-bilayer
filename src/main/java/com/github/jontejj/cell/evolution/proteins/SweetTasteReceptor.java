@@ -14,8 +14,6 @@
  */
 package com.github.jontejj.cell.evolution.proteins;
 
-import static com.github.jontejj.cell.evolution.game.CellWorld.RESOURCE_TILE_SIZE;
-
 import java.util.Optional;
 import java.util.Random;
 
@@ -25,49 +23,51 @@ import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.Nucleobases;
 import com.github.jontejj.cell.evolution.Organism;
+import com.github.jontejj.cell.evolution.game.CellWorld;
 import com.github.jontejj.cell.evolution.game.ResourceTile;
 
-public class TransporterProtein extends FunctionalProtein
+/**
+ * Found in taste buds, gut epithelium, and even in the pancreas.
+ * Upon binding glucose (or other sugars), It initiates signaling via G-proteins (e.g., gustducin), which modulate cell behavior.
+ * In this simulation it detects the level of nucleotides in the environment
+ */
+public class SweetTasteReceptor extends FunctionalProtein
 {
-	private final Nucleobases baseToTransport;
+	private final Nucleobases baseToDetect;
+	private final double detectionThreshold = 100.0; // tweak as needed
 
-	public TransporterProtein(AminoAcidSequence aminoAcidSequence)
+	public SweetTasteReceptor(AminoAcidSequence sequence)
 	{
-		super(aminoAcidSequence);
+		super(sequence);
+
 		Random seededRNG = new Random(sequenceSignature());
-		baseToTransport = Nucleobases.values()[seededRNG.nextInt(Nucleobases.values().length)];
+		baseToDetect = Nucleobases.values()[seededRNG.nextInt(Nucleobases.values().length)];
 	}
 
 	@Override
 	public void performFunction(Cytoplasm env, Organism organism)
 	{
-		if(!env.consumeEnergy(1))
-			return;
-
-		// env.increaseResourceAmount(baseToTransport, (long) (5.0 * molarMass() / 1000.0));
-
 		Vector2 pos = organism.getWorldCenter();
-		int i = (int) Math.floor(pos.x + RESOURCE_TILE_SIZE / 2.0);
-		int j = (int) Math.floor(pos.y + RESOURCE_TILE_SIZE / 2.0);
+		int i = (int) Math.floor(pos.x + CellWorld.RESOURCE_TILE_SIZE / 2.0);
+		int j = (int) Math.floor(pos.y + CellWorld.RESOURCE_TILE_SIZE / 2.0);
 
-		Optional<ResourceTile> tile = env.cellWorld().getResourceTile(i, j);
-		tile.ifPresent(resourceTile -> {
-			if(resourceTile.baseResource() == baseToTransport)
+		Optional<ResourceTile> tileOpt = env.cellWorld().getResourceTile(i, j);
+		tileOpt.ifPresent(tile -> {
+			if(tile.baseResource() == baseToDetect && tile.amount() >= detectionThreshold)
 			{
-				int toConsume = (int) (5.0 * molarMass() / 1000.0);// Bigger transporter moves more!
-				int consumedAmount = resourceTile.consume(toConsume);
-				if(consumedAmount > 0)
-				{
-					env.increaseResourceAmount(baseToTransport, consumedAmount);
-				}
+				env.setMovementInhibited(true);
+			}
+			else
+			{
+				env.setMovementInhibited(false);
 			}
 		});
-
 	}
 
 	@Override
 	public String toString()
 	{
-		return baseToTransport + " transporter";
+		return baseToDetect + " sweet receptor";
 	}
+
 }

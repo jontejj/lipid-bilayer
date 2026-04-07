@@ -14,30 +14,41 @@
  */
 package com.github.jontejj.cell.evolution.proteins;
 
+import org.dyn4j.dynamics.joint.DistanceJoint;
+import org.dyn4j.geometry.Vector2;
+import org.dyn4j.samples.framework.SimulationBody;
+
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.Organism;
+import com.github.jontejj.cell.evolution.organs.Eye;
 
-public class DnaA extends FunctionalProtein
+public class PAX6 extends FunctionalProtein
 {
-	private boolean used = false;
-
-	public DnaA(AminoAcidSequence aminoAcidSequence)
+	public PAX6(AminoAcidSequence aminoAcidSequence)
 	{
 		super(aminoAcidSequence);
 	}
 
+	private boolean used = false;
+
 	@Override
 	public void performFunction(Cytoplasm env, Organism organism)
 	{
+		// TODO: degrade protein instead
 		if(used)
 			return;
 		used = true;
 
-		if(env.consumeEnergy(1))
-		{
-			env.triggerFissionWhenPossible();
-		}
-	}
+		double size = 0.3 + (molarMass() % 10000) / 50000.0; // ~0.3 - 0.5
+		Eye eye = new Eye(organism, size);
+		Vector2 position = organism.getWorldCenter(); // Place at center of organism
+		eye.translate(position);
+		env.world().addBody(eye);
 
+		DistanceJoint<SimulationBody> eyeJoint = new DistanceJoint<>(organism, eye, organism.getWorldCenter(), eye.getWorldCenter());
+		eyeJoint.setSpringFrequency(5.0);
+		eyeJoint.setSpringDampingRatio(0.7);
+		env.world().addJoint(eyeJoint);
+	}
 }

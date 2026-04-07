@@ -17,6 +17,7 @@ package com.github.jontejj.cell.evolution.proteins;
 import com.github.jontejj.cell.evolution.AminoAcid;
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
+import com.github.jontejj.cell.evolution.Organism;
 
 public class AminoAcidSynthaseProtein extends FunctionalProtein
 {
@@ -29,7 +30,7 @@ public class AminoAcidSynthaseProtein extends FunctionalProtein
 	}
 
 	@Override
-	public void performFunction(Cytoplasm env)
+	public void performFunction(Cytoplasm env, Organism organism)
 	{
 
 		// TODO: consume the actual nucleotides needed?

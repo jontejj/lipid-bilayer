@@ -15,6 +15,7 @@
 package com.github.jontejj.cell.evolution;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.dyn4j.dynamics.BodyFixture;
 import org.dyn4j.geometry.Geometry;
@@ -23,7 +24,8 @@ import org.dyn4j.geometry.Vector2;
 import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.world.World;
 
-import com.google.common.base.Optional;
+import com.github.jontejj.cell.evolution.game.CellWorld;
+import com.github.jontejj.cell.evolution.signaling.Signal;
 
 public class UnicellularOrganism extends Organism implements HasMouth
 {
@@ -35,13 +37,13 @@ public class UnicellularOrganism extends Organism implements HasMouth
 
 	private static double GOLDEN_ANGLE = 2 * Math.PI * (1 - 1.0 / ((1 + Math.sqrt(5)) / 2));
 
-	public UnicellularOrganism(String name, Nucleus nucleus, World<SimulationBody> world)
+	public UnicellularOrganism(String name, Nucleus nucleus, CellWorld world)
 	{
 		this(name, nucleus, world, 1.0);
 
 	}
 
-	public UnicellularOrganism(String name, Nucleus nucleus, World<SimulationBody> world, double circleRadius)
+	public UnicellularOrganism(String name, Nucleus nucleus, CellWorld world, double circleRadius)
 	{
 		super(name);
 		this.circleRadius = circleRadius;
@@ -62,27 +64,23 @@ public class UnicellularOrganism extends Organism implements HasMouth
 	}
 
 	@Override
-	public boolean timestep()
+	public boolean timestep(CellWorld cellWorld)
 	{
-		cytoplasm().timestep();
+		cytoplasm().timestep(this);
 
 		if(cytoplasm().shouldTriggerApoptosis())
+		{
+			cellDied(cellWorld);
 			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public String toString()
 	{
-		return name() + ": " + cytoplasm();
+		return super.toString() + ": " + cytoplasm();
 	}
-
-	// private static final long FISSION_COOLDOWN_MS = 500; // 0.5 seconds delay
-	//
-	// public boolean canFissionNow()
-	// {
-	// return System.currentTimeMillis() - lastFissionTime > FISSION_COOLDOWN_MS;
-	// }
 
 	@Override
 	public Optional<Organism> binaryFission()
@@ -91,7 +89,7 @@ public class UnicellularOrganism extends Organism implements HasMouth
 		{
 			Nucleus newNucleus = nucleus.binaryFission(cytoplasm());
 			adjustBodySize(-0.5);
-			UnicellularOrganism newOrganism = new UnicellularOrganism(name(), newNucleus, cytoplasm().world(), circleRadius());
+			UnicellularOrganism newOrganism = new UnicellularOrganism(name(), newNucleus, cytoplasm().cellWorld(), circleRadius());
 			newOrganism.cytoplasm().setLastWormSegment(newOrganism);
 			double separationDistance = circleRadius * 2.0 + 0.1;
 			double radiusForFission = separationDistance * Math.sqrt(fissionIndex); // spread outward
@@ -111,7 +109,7 @@ public class UnicellularOrganism extends Organism implements HasMouth
 			// TODO: share resources
 			return Optional.of(newOrganism);
 		}
-		return Optional.absent();
+		return Optional.empty();
 	}
 
 	void adjustBodySize(double sizeToAdd)
@@ -128,7 +126,12 @@ public class UnicellularOrganism extends Organism implements HasMouth
 		double moles = food.mass() / Nucleobases.averageMolarMass(); // mol
 		long numberOfMolecules = (long) (moles * Constants.AVOGADROS_NUMBER); // actual count
 		// TODO: act differently for different foods and nutrients
-		cytoplasm().increaseResourceAmountForAllNucleotides(numberOfMolecules);
+		long amountPerBase = numberOfMolecules / Nucleobases.values().length;
+		for(Nucleobases base : Nucleobases.values())
+		{
+			cytoplasm().increaseResourceAmount(base, amountPerBase);
+			// TODO: give feedback to a reinforcement learning mechanism
+		}
 	}
 
 	@Override
@@ -147,5 +150,11 @@ public class UnicellularOrganism extends Organism implements HasMouth
 	public void removeFromWorld(World<SimulationBody> world)
 	{
 		world.removeBody(this);
+	}
+
+	@Override
+	public void signal(Signal signal)
+	{
+		signal.signal(cytoplasm);
 	}
 }

@@ -23,8 +23,6 @@ import static com.github.jontejj.cell.evolution.AminoAcid.Serine;
 import static com.google.common.collect.ImmutableList.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.dyn4j.samples.framework.SimulationBody;
-import org.dyn4j.world.World;
 import org.junit.jupiter.api.Test;
 
 import com.github.jontejj.cell.evolution.Cytoplasm;
@@ -32,6 +30,7 @@ import com.github.jontejj.cell.evolution.DNA;
 import com.github.jontejj.cell.evolution.Genome;
 import com.github.jontejj.cell.evolution.Nucleobases;
 import com.github.jontejj.cell.evolution.Nucleus;
+import com.github.jontejj.cell.evolution.game.CellWorld;
 import com.google.common.collect.ImmutableList;
 
 public class ProteinTest
@@ -40,7 +39,7 @@ public class ProteinTest
 	public void testThatTranslationTranslatesCorrectAminoAcids() throws Exception
 	{
 		// TODO: refactor so that world is not needed here
-		World<SimulationBody> world = new World<SimulationBody>();
+		CellWorld world = new CellWorld();
 
 		Cytoplasm minimalCytoplasm = new Cytoplasm(new Nucleus(Genome.generate(4)), world);
 

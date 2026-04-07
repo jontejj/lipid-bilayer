@@ -25,10 +25,10 @@ import org.dyn4j.samples.framework.SimulationBody;
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.Nucleobases;
+import com.github.jontejj.cell.evolution.Organism;
 
 public class StructuralProtein extends FunctionalProtein
 {
-
 	private boolean used = false;
 
 	public StructuralProtein(AminoAcidSequence aminoAcidSequence)
@@ -37,7 +37,7 @@ public class StructuralProtein extends FunctionalProtein
 	}
 
 	@Override
-	public void performFunction(Cytoplasm env)
+	public void performFunction(Cytoplasm env, Organism organism)
 	{
 		// TODO: degrade protein instead
 		if(used)
@@ -46,7 +46,8 @@ public class StructuralProtein extends FunctionalProtein
 
 		if(env.consumeEnergy(1))
 		{
-			Nucleobases baseToUseForStructure = Nucleobases.values()[(int) (Math.abs(sequenceSignature()) % 5)];
+			Random seededRNG = new Random(sequenceSignature());
+			Nucleobases baseToUseForStructure = Nucleobases.values()[seededRNG.nextInt(Nucleobases.values().length)];
 			if(env.decreaseResourceAmount(baseToUseForStructure, aminoAcids().size())) // Bigger enzymes consumes less resources!
 			{
 				// Generate pseudo-random but deterministic variations based on sequence signature

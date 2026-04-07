@@ -16,6 +16,7 @@ package com.github.jontejj.cell.evolution.proteins;
 
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
+import com.github.jontejj.cell.evolution.Organism;
 
 public class ReceptorProtein extends FunctionalProtein
 {
@@ -40,7 +41,7 @@ public class ReceptorProtein extends FunctionalProtein
 	}
 
 	@Override
-	public void performFunction(Cytoplasm env)
+	public void performFunction(Cytoplasm env, Organism organism)
 	{
 		// TODO Auto-generated method stub
 	}

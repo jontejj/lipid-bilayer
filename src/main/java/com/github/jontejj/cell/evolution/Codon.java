@@ -204,9 +204,12 @@ public record Codon(Nucleobases first, Nucleobases middle, Nucleobases last)
 		}
 	}
 
-	public static Nucleobases[] nucleotidesForAminoAcid(AminoAcid aminoAcid)
+	public static Codon fromAminoAcid(AminoAcid aminoAcid)
 	{
-		return aminoAcidNucleotides.get(aminoAcid);
+		Nucleobases[] bases = aminoAcidNucleotides.get(aminoAcid);
+		if(bases == null)
+			throw new IllegalArgumentException("No codon found for amino acid: " + aminoAcid);
+		return new Codon(bases[0], bases[1], bases[2]);
 	}
 
 }

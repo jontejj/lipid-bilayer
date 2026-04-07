@@ -14,9 +14,12 @@
  */
 package com.github.jontejj.cell.evolution.proteins;
 
+import java.util.Random;
+
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.Nucleobases;
+import com.github.jontejj.cell.evolution.Organism;
 
 public class EnzymeProtein extends FunctionalProtein
 {
@@ -26,11 +29,12 @@ public class EnzymeProtein extends FunctionalProtein
 	public EnzymeProtein(AminoAcidSequence aminoAcidSequence)
 	{
 		super(aminoAcidSequence);
-		baseToConsume = Nucleobases.values()[(int) (Math.abs(sequenceSignature()) % 5)];
+		Random seededRNG = new Random(sequenceSignature());
+		baseToConsume = Nucleobases.values()[seededRNG.nextInt(Nucleobases.values().length)];
 	}
 
 	@Override
-	public void performFunction(Cytoplasm env)
+	public void performFunction(Cytoplasm env, Organism organism)
 	{
 		if(env.decreaseResourceAmount(baseToConsume, (long) (MINIMUM_SIZE / molarMass()))) // Bigger enzymes consume less resources!
 		{

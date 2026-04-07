@@ -14,20 +14,19 @@
  */
 package com.github.jontejj.cell.evolution;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.assertj.core.util.Sets;
-import org.dyn4j.samples.framework.SimulationBody;
-import org.dyn4j.world.World;
 
-import com.google.common.base.Optional;
+import com.github.jontejj.cell.evolution.game.CellWorld;
 import com.google.common.base.Stopwatch;
 
 public class CellApp
 {
 	public static void main(String[] args)
 	{
-		World<SimulationBody> world = new World<SimulationBody>();
+		CellWorld world = new CellWorld();
 
 		Cytoplasm minimalCytoplasm = new Cytoplasm(new Nucleus(Genome.generate(4)), world);
 
@@ -59,7 +58,7 @@ public class CellApp
 			for(Organism organism : organisms)
 			{
 				stopwatch = Stopwatch.createStarted();
-				organism.timestep();
+				organism.timestep(world);
 				System.out.println("Time to execute timestep " + timestep + ": " + stopwatch);
 				System.out.println("Stats: " + Stats.asString());
 				System.out.println("Cell " + organism);
@@ -68,8 +67,8 @@ public class CellApp
 				if(binaryFissionResult.isPresent())
 				{
 					System.out.println("Time to execute fission: " + stopwatch);
+					newOrganisms.add(binaryFissionResult.get());
 				}
-				newOrganisms.addAll(binaryFissionResult.asSet());
 			}
 			organisms.addAll(newOrganisms);
 		}

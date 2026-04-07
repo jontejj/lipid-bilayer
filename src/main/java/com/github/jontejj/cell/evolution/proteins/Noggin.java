@@ -17,12 +17,13 @@ package com.github.jontejj.cell.evolution.proteins;
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.Organism;
+import com.github.jontejj.cell.evolution.signaling.InhibitBMP;
 
-public class DnaA extends FunctionalProtein
+public class Noggin extends FunctionalProtein
 {
 	private boolean used = false;
 
-	public DnaA(AminoAcidSequence aminoAcidSequence)
+	public Noggin(AminoAcidSequence aminoAcidSequence)
 	{
 		super(aminoAcidSequence);
 	}
@@ -30,14 +31,10 @@ public class DnaA extends FunctionalProtein
 	@Override
 	public void performFunction(Cytoplasm env, Organism organism)
 	{
-		if(used)
-			return;
-		used = true;
-
-		if(env.consumeEnergy(1))
+		if(!used)
 		{
-			env.triggerFissionWhenPossible();
+			organism.signal(new InhibitBMP());
+			used = true;
 		}
 	}
-
 }

@@ -14,10 +14,13 @@
  */
 package com.github.jontejj.cell.evolution.proteins;
 
+import java.util.Random;
+
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
 import com.github.jontejj.cell.evolution.DNA;
 import com.github.jontejj.cell.evolution.Nucleobases;
+import com.github.jontejj.cell.evolution.Organism;
 
 public class RegulatoryProtein extends FunctionalProtein
 {
@@ -28,11 +31,12 @@ public class RegulatoryProtein extends FunctionalProtein
 	{
 		super(aminoAcidSequence);
 		this.sourceDNA = sourceDNA;
-		baseToMonitor = Nucleobases.values()[(int) (Math.abs(sequenceSignature()) % 5)];
+		Random seededRNG = new Random(sequenceSignature());
+		baseToMonitor = Nucleobases.values()[seededRNG.nextInt(Nucleobases.values().length)];
 	}
 
 	@Override
-	public void performFunction(Cytoplasm env)
+	public void performFunction(Cytoplasm env, Organism organism)
 	{
 		if(env.nucleotideResources().get(baseToMonitor) < 100)
 		{

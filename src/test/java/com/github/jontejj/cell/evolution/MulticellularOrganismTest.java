@@ -19,16 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Map;
 
-import org.dyn4j.samples.framework.SimulationBody;
-import org.dyn4j.world.World;
 import org.junit.jupiter.api.Test;
+
+import com.github.jontejj.cell.evolution.game.CellWorld;
 
 public class MulticellularOrganismTest
 {
 	@Test
 	void testThatMultipleOrganismsNucleotideResourcesCanBeSummed() throws Exception
 	{
-		World<SimulationBody> world = new World<SimulationBody>();
+		CellWorld world = new CellWorld();
 		Organism smallOrganism = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(50)), world);
 		Organism miniOrganism = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(10)), world);
 

@@ -16,6 +16,7 @@ package com.github.jontejj.cell.evolution.proteins;
 
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
+import com.github.jontejj.cell.evolution.Organism;
 
 public abstract class FunctionalProtein extends Protein
 {
@@ -24,5 +25,5 @@ public abstract class FunctionalProtein extends Protein
 		super(aminoAcidSequence);
 	}
 
-	public abstract void performFunction(Cytoplasm env);
+	public abstract void performFunction(Cytoplasm env, Organism organism);
 }

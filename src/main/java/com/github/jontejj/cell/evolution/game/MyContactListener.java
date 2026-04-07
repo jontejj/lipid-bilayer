@@ -14,6 +14,7 @@
  */
 package com.github.jontejj.cell.evolution.game;
 
+import java.awt.Color;
 import java.util.List;
 
 import org.dyn4j.dynamics.contact.Contact;
@@ -27,6 +28,7 @@ import com.github.jontejj.cell.evolution.HasMouth;
 import com.github.jontejj.cell.evolution.MulticellularOrganism;
 import com.github.jontejj.cell.evolution.Organism;
 import com.github.jontejj.cell.evolution.UnicellularOrganism;
+import com.github.jontejj.cell.evolution.neural.Axon;
 
 public class MyContactListener extends ContactListenerAdapter<SimulationBody>
 {
@@ -81,6 +83,36 @@ public class MyContactListener extends ContactListenerAdapter<SimulationBody>
 				world.removeOrganism(org1);
 				world.removeOrganism(org2);
 			}
+		}
+		else if(body1 instanceof Axon && body2 instanceof Organism)
+		{
+			handleAxonContact((Axon) body1, (Organism) body2);
+		}
+		else if(body2 instanceof Axon && body1 instanceof Organism)
+		{
+			handleAxonContact((Axon) body2, (Organism) body1);
+		}
+	}
+
+	private void handleAxonContact(Axon axon, Organism target)
+	{
+		if(!axon.hasFormedSynapseWith(target))
+		{
+			System.out.println("Axon for " + axon + " contacted " + target.name());
+
+			// Add synapse marker / connection
+			axon.registerSynapse(target);
+			axon.setColor(Color.BLUE);
+
+			// TODO: simulate signaling somewhere else
+			axon.transmitSignalToTargets();
+
+			// Optionally attach a soft joint (like synapse anchoring)
+			DistanceJoint<SimulationBody> synapseJoint = new DistanceJoint<>(axon, target, axon.getWorldCenter(), target.getWorldCenter());
+			synapseJoint.setSpringFrequency(5.0);
+			synapseJoint.setSpringDampingRatio(0.7);
+			synapseJoint.setCollisionAllowed(false);
+			world.deferAddition(synapseJoint);
 		}
 	}
 }

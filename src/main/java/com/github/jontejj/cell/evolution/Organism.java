@@ -15,11 +15,13 @@
 package com.github.jontejj.cell.evolution;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.world.World;
 
-import com.google.common.base.Optional;
+import com.github.jontejj.cell.evolution.game.CellWorld;
+import com.github.jontejj.cell.evolution.signaling.Signal;
 
 public abstract class Organism extends SimulationBody
 {
@@ -46,10 +48,12 @@ public abstract class Organism extends SimulationBody
 		return name + "#" + organismId;
 	}
 
-	/**
-	 * @return true if the organism has reached a critical resource level and is about to die
-	 */
-	public abstract boolean timestep();
+	public long organismId()
+	{
+		return organismId;
+	}
+
+	public abstract boolean timestep(CellWorld cellworld);
 
 	public abstract Optional<Organism> binaryFission();
 
@@ -68,4 +72,13 @@ public abstract class Organism extends SimulationBody
 	}
 
 	public abstract void removeFromWorld(World<SimulationBody> world);
+
+	public abstract void signal(Signal signal);
+
+	protected void cellDied(CellWorld cellworld)
+	{
+		this.removeFromWorld(cellworld.world());
+		cellworld.addDeadCellForOrganism(this);
+		cellworld.removeOrganism(this);
+	}
 }

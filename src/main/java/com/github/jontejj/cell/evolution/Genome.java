@@ -17,6 +17,7 @@ package com.github.jontejj.cell.evolution;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,6 @@ import org.assertj.core.util.Lists;
 
 import com.github.jontejj.cell.evolution.DNA.ChromatinMode;
 import com.github.jontejj.cell.evolution.proteins.Protein;
-import com.google.common.base.Optional;
 
 public class Genome
 {
@@ -144,7 +144,10 @@ public class Genome
 		for(DNA dna : dnas)
 		{
 			dna.setEuchromatinModeRandomly();
-			dna.transcribe(cytoplasm).transform(mRNA -> mRNA.translate(cytoplasm).transform(protein -> newProteins.add(protein)));
+			Optional<mRNA> maybemRNA = dna.transcribe(cytoplasm);
+			maybemRNA.ifPresent(mRNA -> {
+				mRNA.translate(cytoplasm).transform(protein -> newProteins.add(protein));
+			});
 		}
 		return newProteins;
 	}

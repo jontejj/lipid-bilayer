@@ -18,43 +18,52 @@ import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.assertj.core.util.Lists;
 import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.world.World;
 
-import com.google.common.base.Optional;
+import com.github.jontejj.cell.evolution.game.CellWorld;
+import com.github.jontejj.cell.evolution.signaling.Signal;
 
 public class MulticellularOrganism extends Organism
 {
 	private final List<Organism> cells;
+	private final List<Organism> originalCells;
 
 	public MulticellularOrganism(String name, List<Organism> cells)
 	{
 		super(name);
 		this.cells = Lists.newArrayList(cells);
+		this.originalCells = Lists.newArrayList(cells);
 	}
 
 	@Override
-	public boolean timestep()
+	public boolean timestep(CellWorld cellworld)
 	{
 		Iterator<Organism> it = cells.iterator();
 		while(it.hasNext())
 		{
 			Organism cell = it.next();
-			if(cell.timestep())
+			if(cell.timestep(cellworld))
 			{
 				it.remove();
 			}
 		}
-		return cells.isEmpty(); // Organism dies if all cells are gone
+		if(cells.isEmpty()) // Organism dies if all cells are gone
+		{
+			cellDied(cellworld);
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public Optional<Organism> binaryFission()
 	{
 		// TODO: implement this?
-		return Optional.absent();
+		return Optional.empty();
 	}
 
 	/**
@@ -84,6 +93,7 @@ public class MulticellularOrganism extends Organism
 	@Override
 	public double totalMass()
 	{
+		// TODO: return zero here? Otherwise there will more mass in the dead cell than in the alive ones (cellDied is called twice)
 		return cells.stream().mapToDouble(cell -> cell.totalMass()).sum();
 	}
 
@@ -91,9 +101,18 @@ public class MulticellularOrganism extends Organism
 	public void removeFromWorld(World<SimulationBody> world)
 	{
 		world.removeBody(this);
-		for(Organism organism : cells)
+		for(Organism organism : originalCells)
 		{
 			organism.removeFromWorld(world);
+		}
+	}
+
+	@Override
+	public void signal(Signal signal)
+	{
+		for(Organism cell : cells)
+		{
+			cell.signal(signal);
 		}
 	}
 }

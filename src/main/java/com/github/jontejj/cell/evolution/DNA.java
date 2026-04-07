@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 import org.assertj.core.util.Lists;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
@@ -65,7 +65,6 @@ public class DNA
 	public DNA(List<Nucleobases> nucleotides, int position)
 	{
 		this(nucleotides, position, calculateNucleotideCounts(nucleotides), calculateMolarMass(nucleotides));
-
 	}
 
 	private static Map<Nucleobases, Integer> calculateNucleotideCounts(List<Nucleobases> nucleotides)
@@ -137,20 +136,20 @@ public class DNA
 	public Optional<mRNA> transcribe(Cytoplasm cytoplasm)
 	{
 		if(chromatinMode == ChromatinMode.HETEROCHROMATIN)
-			return Optional.absent();
+			return Optional.empty();
 
 		// Check if all are available
 		for(Map.Entry<Nucleobases, Integer> entry : nucleotideCounts.entrySet())
 		{
 			if(cytoplasm.nucleotideResources().getOrDefault(entry.getKey(), 0L) < entry.getValue())
-				return Optional.absent();
+				return Optional.empty();
 		}
 
 		// Consume the nucleotides
 		for(Map.Entry<Nucleobases, Integer> entry : nucleotideCounts.entrySet())
 		{
 			if(!cytoplasm.decreaseResourceAmount(entry.getKey(), entry.getValue()))
-				return Optional.absent(); // Failsafe
+				return Optional.empty(); // Failsafe
 		}
 
 		List<Codon> codons = Lists.newArrayList();
@@ -159,7 +158,7 @@ public class DNA
 			codons.add(Codon.getOrInitialize(nucleotides.get(i).toRNA(), nucleotides.get(i + 1).toRNA(), nucleotides.get(i + 2).toRNA()));
 		}
 		if(codons.isEmpty())
-			return Optional.absent();
+			return Optional.empty();
 		return Optional.of(new mRNA(codons, this));
 	}
 
@@ -266,5 +265,36 @@ public class DNA
 	public String toString()
 	{
 		return nucleotides.toString();
+	}
+
+	public static DNA fromAminoAcidSequence(List<AminoAcid> sequence, int position)
+	{
+		List<Nucleobases> dnaBases = new ArrayList<>();
+
+		// Add start codon: AUG (in DNA: ATG)
+		dnaBases.add(Nucleobases.ADENINE);
+		dnaBases.add(Nucleobases.THYMINE);
+		dnaBases.add(Nucleobases.GUANINE);
+
+		for(AminoAcid aa : sequence)
+		{
+			Codon codon = Codon.fromAminoAcid(aa);
+			dnaBases.add(codon.first());
+			dnaBases.add(codon.middle());
+			dnaBases.add(codon.last());
+		}
+
+		// Add stop codon (randomly select one of the three stop codons)
+		Nucleobases[][] stopCodons = {{Nucleobases.THYMINE, Nucleobases.ADENINE, Nucleobases.ADENINE}, // UAA
+				{Nucleobases.THYMINE, Nucleobases.ADENINE, Nucleobases.GUANINE}, // UAG
+				{Nucleobases.THYMINE, Nucleobases.GUANINE, Nucleobases.ADENINE}  // UGA
+		};
+		Nucleobases[] stop = stopCodons[RND.nextInt(stopCodons.length)];
+		for(Nucleobases base : stop)
+		{
+			dnaBases.add(base);
+		}
+
+		return new DNA(dnaBases, position);
 	}
 }

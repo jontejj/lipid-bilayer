@@ -190,5 +190,10 @@
 			<version>1.0.13</version>
 		</dependency>
 
-	</dependencies>
+		<dependency>
+			<groupId>org.dyn4j</groupId>
+			<artifactId>dyn4j-samples</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+    </dependencies>
 </project>

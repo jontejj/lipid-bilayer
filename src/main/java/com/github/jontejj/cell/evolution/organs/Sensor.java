@@ -12,32 +12,11 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.evolution.proteins;
+package com.github.jontejj.cell.evolution.organs;
 
-import com.github.jontejj.cell.evolution.AminoAcidSequence;
-import com.github.jontejj.cell.evolution.Cytoplasm;
-import com.github.jontejj.cell.evolution.Organism;
-
-public class DnaA extends FunctionalProtein
+public interface Sensor
 {
-	private boolean used = false;
+	void signal(long signal);
 
-	public DnaA(AminoAcidSequence aminoAcidSequence)
-	{
-		super(aminoAcidSequence);
-	}
-
-	@Override
-	public void performFunction(Cytoplasm env, Organism organism)
-	{
-		if(used)
-			return;
-		used = true;
-
-		if(env.consumeEnergy(1))
-		{
-			env.triggerFissionWhenPossible();
-		}
-	}
-
+	long sense();
 }

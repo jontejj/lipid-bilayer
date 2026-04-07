@@ -12,32 +12,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.github.jontejj.cell.evolution.proteins;
+package com.github.jontejj.cell.evolution.game;
 
-import com.github.jontejj.cell.evolution.AminoAcidSequence;
-import com.github.jontejj.cell.evolution.Cytoplasm;
-import com.github.jontejj.cell.evolution.Organism;
-
-public class DnaA extends FunctionalProtein
+public class TestCellWorld extends CellWorld
 {
-	private boolean used = false;
+	private static final long serialVersionUID = 1L;
 
-	public DnaA(AminoAcidSequence aminoAcidSequence)
+	public TestCellWorld()
 	{
-		super(aminoAcidSequence);
+		initializeWorld();
 	}
-
-	@Override
-	public void performFunction(Cytoplasm env, Organism organism)
-	{
-		if(used)
-			return;
-		used = true;
-
-		if(env.consumeEnergy(1))
-		{
-			env.triggerFissionWhenPossible();
-		}
-	}
-
 }
