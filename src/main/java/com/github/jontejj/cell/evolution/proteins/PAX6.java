@@ -31,17 +31,19 @@ public class PAX6 extends FunctionalProtein
 	}
 
 	private boolean used = false;
+	private Eye eye;
 
 	@Override
 	public void performFunction(Cytoplasm env, Organism organism)
 	{
 		// TODO: degrade protein instead
 		if(used)
+		{
+			eye.look(env.cellWorld());
 			return;
-		used = true;
-
+		}
 		double size = 0.3 + (molarMass() % 10000) / 50000.0; // ~0.3 - 0.5
-		Eye eye = new Eye(organism, size);
+		eye = new Eye(organism, size);
 		Vector2 position = organism.getWorldCenter(); // Place at center of organism
 		eye.translate(position);
 		env.world().addBody(eye);
@@ -50,5 +52,7 @@ public class PAX6 extends FunctionalProtein
 		eyeJoint.setSpringFrequency(5.0);
 		eyeJoint.setSpringDampingRatio(0.7);
 		env.world().addJoint(eyeJoint);
+
+		used = true;
 	}
 }
