@@ -25,6 +25,7 @@ import org.dyn4j.samples.framework.SimulationBody;
 import org.dyn4j.world.DetectFilter;
 import org.dyn4j.world.result.RaycastResult;
 
+import com.github.jontejj.cell.evolution.Eatable;
 import com.github.jontejj.cell.evolution.Organism;
 import com.github.jontejj.cell.evolution.game.CellWorld;
 
@@ -43,17 +44,31 @@ public class Eye extends SimulationBody
 	public void look(CellWorld world)
 	{
 		Vector2 start = this.getWorldCenter();
-		Vector2 direction = new Vector2(Math.cos(this.getTransform().getRotation().toDegrees()),
-				Math.sin(this.getTransform().getRotation().toDegrees()));
+		double angle = this.getTransform().getRotationAngle();
+		Vector2 direction = new Vector2(Math.cos(angle), Math.sin(angle));
 
 		Ray ray = new Ray(start, direction);
 		RaycastResult<SimulationBody, BodyFixture> closest = world.world()
 				.raycastClosest(ray, 50, new DetectFilter<SimulationBody, BodyFixture>(true, true, null));
 
-		SimulationBody hit = closest.getBody();
-		if(hit instanceof Organism)
+		if(closest != null)
 		{
-			System.out.println("Eye detected: " + hit);
+			SimulationBody hit = closest.getBody();
+			if(hit instanceof Organism)
+			{
+				System.out.println("Eye detected: " + hit);
+			}
+			else if(hit instanceof Eatable food)
+			{
+				Vector2 hitPoint = closest.getRaycast().getPoint();
+				Vector2 toTarget = hitPoint.difference(start);
+
+				double distance = toTarget.getMagnitude();
+				double targetAngle = Math.atan2(toTarget.y, toTarget.x);
+				double bodyAngle = owner.getTransform().getRotationAngle();
+				double relativeAngle = targetAngle - bodyAngle;
+				owner.onFoodSeen(food, distance, relativeAngle);
+			}
 		}
 	}
 }

@@ -67,6 +67,7 @@ public class UnicellularOrganism extends Organism implements HasMouth
 	public boolean timestep(CellWorld cellWorld)
 	{
 		cytoplasm().timestep(this);
+		decayNeuralState();
 
 		if(cytoplasm().shouldTriggerApoptosis())
 		{

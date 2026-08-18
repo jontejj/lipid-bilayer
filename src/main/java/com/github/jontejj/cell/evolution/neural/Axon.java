@@ -70,11 +70,11 @@ public class Axon extends SimulationBody
 
 		switch(neurotransmitter)
 		{
-		// case GLUTAMATE -> target.excite(); // Increases activation
-		// case GABA -> target.inhibit(); // Decreases activity
-		// case DOPAMINE -> target.adjustMotivation(); // e.g., resource-seeking
-		// case SEROTONIN -> target.adjustRiskAversion(); // or movement inhibition
-		// case ACETYLCHOLINE -> target.triggerMuscleContraction(); // trigger movement
+		case GLUTAMATE -> target.excite();
+		case GABA -> target.inhibit();
+		case DOPAMINE -> target.adjustMotivation(0.25);
+		case SEROTONIN -> target.adjustRiskAversion(0.25);
+		case ACETYLCHOLINE -> target.triggerMuscleContraction();
 		}
 	}
 

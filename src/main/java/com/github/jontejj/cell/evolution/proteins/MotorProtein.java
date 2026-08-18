@@ -20,6 +20,7 @@ import org.dyn4j.geometry.Vector2;
 
 import com.github.jontejj.cell.evolution.AminoAcidSequence;
 import com.github.jontejj.cell.evolution.Cytoplasm;
+import com.github.jontejj.cell.evolution.Eatable;
 import com.github.jontejj.cell.evolution.Organism;
 
 public class MotorProtein extends FunctionalProtein
@@ -39,18 +40,40 @@ public class MotorProtein extends FunctionalProtein
 		if(env.isMovementInhibited())
 			return;
 
+		if(organism.activation() <= 0.1)
+			return;
+
+		// TODO: how to make this happen but not too often?
+		// if(organism.muscleContraction() <= 0.0)
+		// return;
+
 		if(!env.consumeEnergy(ATP_COST))
 			return;
 
 		Vector2 direction = chooseMovementDirection(organism, env);
 		if(direction != null)
 		{
-			organism.applyForce(direction.multiply(MOVEMENT_FORCE));
+			double force = MOVEMENT_FORCE * organism.activation();
+			organism.applyForce(direction.multiply(force));
 		}
 	}
 
 	private Vector2 chooseMovementDirection(Organism organism, Cytoplasm cytoplasm)
 	{
+		Eatable food = organism.getSeenFood();
+
+		if(food != null)
+		{
+			double relativeAngle = organism.getSeenFoodAngle();
+			double bodyAngle = organism.getTransform().getRotationAngle();
+			double caution = organism.riskAversion();
+			double noise = (RND.nextDouble() - 0.5) * caution;
+
+			double moveAngle = bodyAngle + relativeAngle + noise;
+
+			return new Vector2(Math.cos(moveAngle), Math.sin(moveAngle));
+		}
+
 		// Default behavior: random movement
 		double angle = RND.nextDouble() * 2 * Math.PI;
 		return new Vector2(Math.cos(angle), Math.sin(angle));
