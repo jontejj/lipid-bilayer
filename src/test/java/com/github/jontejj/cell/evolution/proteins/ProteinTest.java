@@ -39,7 +39,7 @@ public class ProteinTest
 	public void testThatTranslationTranslatesCorrectAminoAcids() throws Exception
 	{
 		// TODO: refactor so that world is not needed here
-		CellWorld world = new CellWorld();
+		CellWorld world = new CellWorld(4);
 
 		Cytoplasm minimalCytoplasm = new Cytoplasm(new Nucleus(Genome.generate(4)), world);
 

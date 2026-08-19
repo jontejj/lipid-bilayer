@@ -20,6 +20,7 @@ public class TestCellWorld extends CellWorld
 
 	public TestCellWorld()
 	{
+		super(5);
 		initializeWorld();
 	}
 }

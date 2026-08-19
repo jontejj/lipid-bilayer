@@ -16,5 +16,6 @@ module com.github.jontejj.cell
 	requires jmh.core;
 	requires com.google.errorprone.annotations;
 	requires org.dyn4j;
+	requires jargo;
 
 }

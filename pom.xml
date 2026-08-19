@@ -6,8 +6,8 @@
 	<artifactId>cell</artifactId>
 	<version>1.0</version>
 	<properties>
-		<maven.compiler.source>24</maven.compiler.source>
-		<maven.compiler.target>24</maven.compiler.target>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
 		<!-- Change the nd4j.backend property to nd4j-cuda-X-platform to use CUDA 
 			GPUs -->
 		<!-- <nd4j.backend>nd4j-cuda-10.2-platform</nd4j.backend> -->
@@ -58,12 +58,35 @@
 				</dependencies>
 			</plugin>
 			<plugin>
-				<groupId>org.openjfx</groupId>
-				<artifactId>javafx-maven-plugin</artifactId>
-				<version>0.0.5</version>
-				<configuration>
-					<mainClass>com.github.jontejj.cell.ui.JavaFxUI</mainClass>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.6.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.github.jontejj.cell.evolution.game.CellWorld</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -189,11 +212,10 @@
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.13</version>
 		</dependency>
-
 		<dependency>
-			<groupId>org.dyn4j</groupId>
-			<artifactId>dyn4j-samples</artifactId>
-			<version>1.0.0</version>
-		</dependency>
+            <groupId>se.softhouse</groupId>
+            <artifactId>jargo</artifactId>
+            <version>0.4.14</version>
+        </dependency>
     </dependencies>
 </project>

@@ -26,7 +26,7 @@ public class CellApp
 {
 	public static void main(String[] args)
 	{
-		CellWorld world = new CellWorld();
+		CellWorld world = new CellWorld(4);
 
 		Cytoplasm minimalCytoplasm = new Cytoplasm(new Nucleus(Genome.generate(4)), world);
 

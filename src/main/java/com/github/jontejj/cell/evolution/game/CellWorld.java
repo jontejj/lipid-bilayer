@@ -31,6 +31,8 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static se.softhouse.jargo.Arguments.helpArgument;
+import static se.softhouse.jargo.Arguments.integerArgument;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -71,6 +73,11 @@ import com.github.jontejj.cell.evolution.food.DeadCell;
 import com.github.jontejj.cell.evolution.food.GlucoseMolecules;
 import com.google.common.base.Stopwatch;
 
+import se.softhouse.jargo.Argument;
+import se.softhouse.jargo.ArgumentException;
+import se.softhouse.jargo.CommandLineParser;
+import se.softhouse.jargo.ParsedArguments;
+
 public class CellWorld extends SimulationFrame
 {
 	private static final long serialVersionUID = 5663760293144882635L;
@@ -84,10 +91,12 @@ public class CellWorld extends SimulationFrame
 	private Organism selectedOrganism;
 	private ResourceTile[][] resourceTiles;
 	private long timeStep = 0;
+	private int chosenModelSize;
 
-	public CellWorld()
+	public CellWorld(int chosenModelSize)
 	{
 		super("Cell World");
+		this.chosenModelSize = chosenModelSize;
 
 		this.printStats = new ToggleStateKeyboardInputHandler(this.canvas, KeyEvent.VK_NUMPAD3, KeyEvent.VK_3);
 		printStats.install();
@@ -176,7 +185,7 @@ public class CellWorld extends SimulationFrame
 		// stopwatch = Stopwatch.createStarted();
 		for(int i = 0; i < 1; i++)
 		{
-			Genome mycoplasmaGenitaliumGenome = Genome.generate(20000);
+			Genome mycoplasmaGenitaliumGenome = Genome.generate(this.chosenModelSize);
 			UnicellularOrganism mycoplasmaGenitalium = new UnicellularOrganism("Homo sapiens", // Mycoplasma genitalium
 					new Nucleus(mycoplasmaGenitaliumGenome),
 					this);
@@ -419,7 +428,23 @@ public class CellWorld extends SimulationFrame
 
 	public static void main(String[] args)
 	{
-		CellWorld simulation = new CellWorld();
-		simulation.run();
+		Argument<?> helpArgument = helpArgument("-h", "--help");
+		Argument<Integer> modelSize = integerArgument("-m", "--model-size").defaultValue(20000).description("How many DNAs the model should have")
+				.metaDescription("<model-size>").build();
+
+		try
+		{
+			ParsedArguments arguments = CommandLineParser.withArguments(modelSize, helpArgument).parse(args);
+
+			int chosenModelSize = arguments.get(modelSize);
+			System.out.println("Model size: " + chosenModelSize);
+			CellWorld simulation = new CellWorld(chosenModelSize);
+			simulation.run();
+		}
+		catch(ArgumentException exception)
+		{
+			System.out.println(exception.getMessageAndUsage());
+			System.exit(1);
+		}
 	}
 }

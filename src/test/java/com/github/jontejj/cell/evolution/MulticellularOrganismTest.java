@@ -28,7 +28,7 @@ public class MulticellularOrganismTest
 	@Test
 	void testThatMultipleOrganismsNucleotideResourcesCanBeSummed() throws Exception
 	{
-		CellWorld world = new CellWorld();
+		CellWorld world = new CellWorld(50);
 		Organism smallOrganism = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(50)), world);
 		Organism miniOrganism = new UnicellularOrganism("Mycoplasma genitalium", new Nucleus(Genome.generate(10)), world);
 
